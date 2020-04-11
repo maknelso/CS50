@@ -21,7 +21,7 @@ int main(void)
 }
 
 
-float average(int length, int array[])             //returns float fx named average - create average
+float average(int length, int array[])             //returns float fx named average - create average. In C, arrays do not remember own length
 {
     int sum = 0;                                   //start counting from 0
     for (int i = 0; i < length; i++)
