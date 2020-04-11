@@ -17,7 +17,7 @@ int main(void)
         scores[i] = get_int("Score %i: ", i + 1);     
     }
 
-    printf("Average: %.1f\n", average(n, scores)); //n = len of array, scores = name of array, .1 shows 1 decimal
+    printf("Average: %.1f\n", average(n, scores)); //n = len of array, scores = name of array, .1 shows 1 decimal -> not sure about average(n, scores) why do we need it?
 }
 
 
