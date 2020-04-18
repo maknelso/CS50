@@ -1,3 +1,47 @@
+2nd time doing it:
+
+#include <cs50.h>                                               //for get_float, get_int
+#include <math.h>                                               //probably for round
+#include <stdio.h>                                              //for printf
+
+int main (void)
+{
+    float initial_amount;                                       //declare inital amount
+    do
+    {
+        initial_amount = get_float("Please enter amount: ");
+    }
+    while (initial_amount < 0);                                 //prompt user (keep asking if amount is not positive)
+
+    int round_amount = round(initial_amount * 100);             //convert to cents
+
+    int coins = 0;                                              //initial coin counter
+    while(round_amount >= 25)
+    {
+        round_amount -= 25;
+        coins++;
+    }
+    while(round_amount >= 10)
+    {
+        round_amount -= 10;
+        coins++;
+    }
+    while(round_amount >= 5)
+    {
+        round_amount -= 5;
+        coins++;
+    }
+    while(round_amount >= 1)
+    {
+        round_amount -= 1;
+        coins++;
+    }
+printf("Your min. amount of coins is: %i\n", coins);
+}
+
+--------------------------------------------------------------------------------------------------
+1st time doing it:
+
 #include <stdio.h>
 #include <cs50.h>
 #include <math.h>
