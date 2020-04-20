@@ -5,35 +5,40 @@ Starting in 54:33 - dynamically asking for score and giving you an average
 #include <cs50.h>
 #include <stdio.h>
 
-float average(int length, int array[]);            //telling compiler there is a f(x) average
+float average(int length, int array[]);            //telling (declares) compiler there is a f(x) average - see below
+
 int main(void)
 {
     int n = get_int("Number of scores: ");         //step 1: ask how many assignments    
 
-    int scores[n];                                 //step 2: array
+    int scores[n];                                 //step 2: array > put n into scores array [n] -> # of scores
 
     for (int i = 0; i < n; i++)                    //step 3: prompt user to keep asking for score until i==n
     {
-        scores[i] = get_int("Score %i: ", i + 1);     
+        scores[i] = get_int("Score %i: ", i + 1);  //stores the input user gives to scores array [i] -> actual scores   
     }
 
     printf("Average: %.1f\n", average(n, scores)); //n = len of array, scores = name of array, .1 shows 1 decimal -> not sure about average(n, scores) why do we need it?
 }
 
 
-float average(int length, int array[])             //returns float fx named average - create average. In C, arrays do not remember own length
+float average(int length, int array[])          //returns float named average (create average). In C, arrays do not remember own length
 {
-    int sum = 0;                                   //start counting from 0
+    int sum = 0;                                //start counting from 0
     for (int i = 0; i < length; i++)
     {
-        sum += array[i];  //sum = sum + next item in array - get bracket 1+2+3 to sum
+        sum += array[i];                        //sum = sum + next item in array - get bracket [0]+[1]+[2] to sum
     }
-    return (float)sum/(float)length;               //want decimals in your score (do not divide int by int)
+    return (float)sum/(float)length;            //want decimals in your score (do not divide int by int)
 }
 
 Example finished @  1:04:00
+-----------------------------------------------------------------------------------------------------------------
+
 
 Around 1:20:00 - string.c example
+
+Print out individual character examples
 
 #include <cs50.h>
 #include <stdio.h>
@@ -45,7 +50,7 @@ int main(void)
     printf("Output: ");
     
     int n = strlen(s)                       //can make this more succinct - see below
-    for (int i = 0; i < n; i++)
+    for (int i = 0; s[i] != '\0'; i++)
     {
         printf("%c", s[i]);
     }
@@ -69,3 +74,33 @@ int main(void)
     }
 printf("\n");
 }
+
+----------------------------------------------------------------------------------------
+
+Upper case example
+
+int main (void)
+{
+    string s = get_string ("Before: ");
+    printf("After: ");
+    for (int i = 0, n = strlens); i < n; i++)
+    {
+        if (s[i] >= 'a' && s[i] <= 'z')
+        {
+            printf("%c", s[i] - 32);
+        }
+        else
+        {
+            printf("%c", s[i]);
+        }
+    }
+printf("\n");
+}
+
+
+
+
+
+
+
+
