@@ -97,7 +97,14 @@ int main (void)
 printf("\n");
 }
 
+There is already a function in C that can do uppercase
 
+#include <ctype.h>
+
+for
+{
+    printf("%c", toupper(s[i]));
+}
 
 
 
