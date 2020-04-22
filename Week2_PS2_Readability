@@ -6,14 +6,14 @@
 int main(void)
 {
     string text = get_string("Please enter paragraph: ");
-    
-    int NumLetters = 0;       //initialize letters    
-    int NumWords = 0;         //initalize words (why start at 1?)
+
+    int NumLetters = 0;       //initialize letters
+    int NumWords = 1;         //initialize words -> at line 22-24, if there is no space, there is 1 word, 1 space, there is 2 words, etc.
     int NumSentences = 0;     //initailize sentences
 
-//count letters, words, and sentences                                                   //set-up for, if, else if, else 
+//count letters, words, and sentences                                                   //set-up for, if, else if, else
 
-    for (int i = 0; i < strlen(text); i++)                                              //set-up the run through the array 
+    for (int i = 0; i < strlen(text); i++)                                              //set-up the run through the array
     {
        if ((text[i] >= 'a' && text[i] <= 'z') || (text[i] >= 'A' && text[i] <= 'Z'))    //if fx - if array in text is lower case a-z or UPPER CASE A-Z
        {
@@ -31,8 +31,9 @@ int main(void)
 
 //printf("letters: %i; words: %i; sentences: %i\n", letterscount, wordcount, sentencecount);
 
-    float grade = 0.0588 * (100 * (float) letterscount / (float) wordcount) - 0.296 * (100 * (float) sentencecount / (float) wordcount) - 15.8;
-    if (grade < 16 && grade >= 0)
+    float grade = 0.0588 * (100 * (float) NumLetters / (float) NumWords) - 0.296 * (100 * (float) NumSentences / (float) NumWords) - 15.8;
+
+    if (grade >= 0 && grade < 16)                           //have to use && here, not ||                               
     {
         printf("Grade %i\n", (int) round(grade));
     }
