@@ -1,0 +1,47 @@
+#include <stdio.h>                                                                      //for printf
+#include <cs50.h>                                                                       //for get_string
+#include <string.h>                                                                     //for strlen
+#include <math.h>                                                                       //for round fx
+
+int main(void)
+{
+    string text = get_string("Please enter paragraph: ");
+    
+    int NumLetters = 0;       //initialize letters    
+    int NumWords = 0;         //initalize words (why start at 1?)
+    int NumSentences = 0;     //initailize sentences
+
+//count letters, words, and sentences                                                   //set-up for, if, else if, else 
+
+    for (int i = 0; i < strlen(text); i++)                                              //set-up the run through the array 
+    {
+       if ((text[i] >= 'a' && text[i] <= 'z') || (text[i] >= 'A' && text[i] <= 'Z'))    //if fx - if array in text is lower case a-z or UPPER CASE A-Z
+       {
+           NumLetters++;
+       }
+       else if (text[i] == ' ')                                                         //else fx-if array in txt has a space, inc. word count - try test scenario
+       {
+           NumWords++;
+       }
+       else if (text[i] == '.' || text[i] == '!' || text[i] == '?')                     //else if fx-if array in txt has period, exclamation mark, or question mark
+       {
+           NumSentences++;
+       }
+    }
+
+//printf("letters: %i; words: %i; sentences: %i\n", letterscount, wordcount, sentencecount);
+
+    float grade = 0.0588 * (100 * (float) letterscount / (float) wordcount) - 0.296 * (100 * (float) sentencecount / (float) wordcount) - 15.8;
+    if (grade < 16 && grade >= 0)
+    {
+        printf("Grade %i\n", (int) round(grade));
+    }
+    else if (grade >= 16)
+    {
+        printf("Grade 16+\n");
+    }
+    else
+    {
+        printf("Before Grade 1\n");
+    }
+}
