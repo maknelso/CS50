@@ -2,7 +2,7 @@
 #include <stdio.h>      //allows for printf
 #include <cs50.h>       //allows for get_int
 
-int main (void)
+int main(void)
 {
     int n;              //declare n first
     do
@@ -26,10 +26,10 @@ int main (void)
         }
         printf("  ");                           //print the spaces in between
 //build the "right pyramid" second
-    for (int j = n - i - 1; j < n; j++)         //trick to the "new", right pyramid is here - use same loop variables as above
-    {
-        printf("#");
-    }
-    printf("\n");                               //kick to the new line after: "left pyramid", "two spaces", "right pyramid"
+        for (int j = n - i - 1; j < n; j++)         //trick to the "new", right pyramid is here - use same loop variables as above
+        {
+            printf("#");
+        }
+        printf("\n");                               //kick to the new line after: "left pyramid", "two spaces", "right pyramid"
     }
 }
