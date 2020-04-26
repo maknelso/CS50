@@ -1,0 +1,35 @@
+//Mario - more comfortable
+#include <stdio.h>      //allows for printf
+#include <cs50.h>       //allows for get_int
+
+int main (void)
+{
+    int n;              //declare n first
+    do
+    {
+        n = get_int("Positive Number: ");
+    }
+    while (n < 1 || n > 8);                     //we only accept integer values between 1-8 inclusive -> while (bool expr)
+//build the "left pyramid" first
+    for (int i = 0; i < n; i++)                 //i is outter loop
+    {
+        for (int j = 0; j < n; j++)             //j is inner loop
+        {
+            if (i + j < n - 1)
+            {
+                printf(" ");
+            }
+            else
+            {
+                printf("#");
+            }
+        }
+        printf("  ");                           //print the spaces in between
+//build the "right pyramid" second
+    for (int j = n - i - 1; j < n; j++)         //trick to the "new", right pyramid is here - use same loop variables as above
+    {
+        printf("#");
+    }
+    printf("\n");                               //kick to the new line after: "left pyramid", "two spaces", "right pyramid"
+    }
+}
