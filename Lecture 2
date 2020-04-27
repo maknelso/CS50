@@ -2,6 +2,42 @@ Lecture 2 - Arrays (done in C)
 
 Starting in 54:33 - dynamically asking for score and giving you an average
 
+//2nd time doing it:
+
+#include <cs50.h>
+#include <stdio.h>
+
+float average(int length, int array[]);             //prototype - end with semicolon
+
+int main (void)
+{
+    int n = get_int("Number of scores: ");            //prompt user for number of scores
+    
+    int scores[n];                                    //declare array with size n
+    
+    for (int i = 0; i < n; i++)
+    {
+        scores[i] = get_int("Score %i: ", i + 1);      //keep asking for actual scores and store them in array, i+1 to print at score 1, 2, 3
+    }
+
+    printf("Average: %.1f\n", average(n, scores));     //average needs length of array (n) and array itself (scores - name of array)
+}
+
+//create average function - initialize it as a float
+//need to know: 1)length of the array, 2)array itself - length and array are just names. It takes two input: an int, and an array of ints
+float average(int length, int array[])                  
+{
+    int sum = 0;                                        //initialize sum
+    for (int i = 0; i < length; i++)
+    {
+        sum += array[i];                                //sum = sum + array[i];
+    }
+    return (float) sum / (float) length;                //the fx named average outputs a float (above)
+}
+
+-----------------------------------------------------------------------------------------------------------
+
+//1st time doing it:
 #include <cs50.h>
 #include <stdio.h>
 
