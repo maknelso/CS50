@@ -1,32 +1,70 @@
 #include <stdio.h>
 #include <cs50.h>
 #include <string.h>
-#include <stdlib.h>
-#include <ctype.h>                                                              //check if it's a digit
+#include <stdlib.h>     //converts a string into a number - for atoi() fx
+#include <ctype.h>      //for isdigit() fx
 
 int main(int argc, string argv[])
 {
+    //get the key as a command line argument
     if (argc != 2)
     {
         printf("Usage: ./caesar key\n");
+        return 1;   //end
     }
-
-    if (argc == 2)                                                              //command line will only accept 2 argc
+    //command line will only accept 2 argc
+    else if (argc == 2)
     {
-        string s = argv[1];                                                     
-        
-        for (int i = 0, n = strlen(s); i < n; i++)                              //check if each character in the string is a digit
+        int key = atoi(argv[1]);
+        //stores a bool to use as an off switch if we detect incorrect input
+        bool isKeyValid = true;
+        //for loop to check each digit if it's an int
+        for (int i = 0, n = strlen(argv[1]); i < n; i++)
         {
-            if (0 != isdigit(s[i]))                                             //non-zero return value for isdigit() means it is a digit
+//if isdigit detects a non-int it'll set bool to false and end loop
+            if (isdigit(argv[1][i]) == false)
             {
-                printf("okay, you entered digits\n");
-            }
-            else
-            {
+                isKeyValid = false;
+                i = n;
                 printf("Usage: ./caesar key\n");
+                return 1;   //end
             }
-            int k = atoi(argv[1]);
+        }
+        //bool isKeyValid is true, unless it is turned off if there is a non-int
+        if (isKeyValid)
+        {
+            //prompt the user to type plaintext
+            string plaintext = get_string("plaintext: ");
+            //encipher the plaintext
+            printf("ciphertext: ");
+
+            for (int j = 0, o = strlen(plaintext); j < o; j++)
+            {
+                char ciphertext[o];
+
+                if (isalpha(plaintext[j]) == 0)     //0 means not alphabet
+                {
+                    ciphertext[j] = plaintext[j];
+                }
+                else if (isupper(plaintext[j]) > 0) //> 0 means upper case
+                {
+                    //implement loop: ci = (pi + k) % 26
+                    //convert ASCII to alphabetical index for upper
+                    plaintext[j] = (int) plaintext[j] - 65;
+                    //shift alphabetical index using formula
+                    ciphertext[j] = ((int) plaintext[j] + key) % 26;
+                    //convert result back to ASCII
+                    ciphertext[j] = ciphertext[j] + 65;
+                }
+                else    //lower case
+                {
+                    plaintext[j] = (int) plaintext[j] - 97;
+                    ciphertext[j] = ((int) plaintext[j] + key) % 26;
+                    ciphertext[j] = ciphertext[j] + 97;
+                }
+                printf("%c", ciphertext[j]);
+            }
+            printf("\n");
         }
     }
-
 }
