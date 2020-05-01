@@ -22,7 +22,7 @@ int main(int argc, string argv[])
         for (int i = 0, n = strlen(argv[1]); i < n; i++)
         {
 //if isdigit detects a non-int it'll set bool to false and end loop
-            if (isdigit(argv[1][i]) == false)
+            if (isdigit(argv[1][i]) == false)               //****TRICK IS HERE: argv[1][i] not argv[i]!!!!
             {
                 isKeyValid = false;
                 i = n;
