@@ -1,0 +1,110 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+
+// Max number of candidates an election can have
+#define MAX 9
+
+// Candidates have name and vote count
+typedef struct
+{
+    string name;
+    int votes;
+}
+candidate;
+
+// Array of candidates
+candidate candidates[MAX];
+
+// Number of candidates
+int candidate_count;
+
+// Function prototypes
+bool vote(string name);
+void print_winner(void);
+
+int main(int argc, string argv[])
+{
+    // Check for invalid usage -> need at least 1 candidate
+    if (argc < 2)
+    {
+        printf("Usage: plurality [candidate ...]\n");
+        return 1;
+    }
+
+//Use this example: ./plurality Alice Bob Charlie
+
+    // Populate array of candidates
+    candidate_count = argc - 1;                         //first argc is "./plurality", so candidate_count = argc - 1. E.g. 3 (4 -1)
+
+    if (candidate_count > MAX)
+    {
+        printf("Maximum number of candidates is %i\n", MAX);
+        return 2;
+    }
+
+    for (int i = 0; i < candidate_count; i++)
+    {
+        candidates[i].name = argv[i + 1];               //candidate[0].name = argv[1] ("Alice"), candidate[1].name = argv[2] ("Bob"), etc.
+        candidates[i].votes = 0;                        //candidate[0].votes = 0 ("Alice"), candidate[1].votes = 0 ("Bob"), etc.
+    }
+
+    int voter_count = get_int("Number of voters: ");    //prompt user to input number of voters (e.g. 3 - for Alice, Bob, Charlie)
+
+    // Loop over all voters
+    for (int i = 0; i < voter_count; i++)               //e.g. i < 3
+    {
+        string name = get_string("Vote: ");             //prompt user to input name of who to vote and store in variable called name
+
+        // Check for invalid vote                       //if name does not match with voter, print invalid vote
+        if (!vote(name))
+        {
+            printf("Invalid vote.\n");
+        }
+    }
+
+    // Display winner of election
+    print_winner();
+}
+
+// Update vote totals given a new vote
+bool vote(string name)
+{
+    // TODO
+    //Look for a candidate name input, if found, update vote total and return true. If not found, don't update and return false.
+    for (int j = 0; j < candidate_count; j++)
+    {
+        if (strcmp(candidates[j].name, name) == 0)
+        {
+            candidates[j].votes++;
+            return true;
+        }
+    }
+    return false;
+}
+
+// Print the winner (or winners) of the election -> this part is trickier - how do we find max?
+void print_winner(void)
+{
+    int max_votes = 0;                                  //declaration
+    // TODO
+    // find value of max votes
+    for (int k = 0; k < candidate_count; k++)           //candidate_count = argc - 1
+    {
+        if (max_votes <= candidates[k].votes)
+        {
+            max_votes = candidates[k].votes;
+        }
+    }
+
+    //print candidate names that match max value
+    for (int l = 0; l < candidate_count; l++)
+    {
+        if (max_votes == candidates[l].votes)
+        {
+            printf("%s\n", candidates[l].name);
+        }
+    }
+    return;
+}
+
