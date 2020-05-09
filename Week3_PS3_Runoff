@@ -2,6 +2,24 @@
 #include <stdio.h>
 #include <string.h>             //need for strcmp fx
 
+
+// Summary:
+// figure out the number of voters
+// line 66: keep querying for votes -> take in the ranks, e.g. Rank 1: Alice, Rank 2: Charlie, Rank 3: Bob
+// tabulate: iterate over the candidates array and implement the vote count for the particular candidate
+// then we see is there a winner or not: print_winner fx
+// if no winner, check if there is a tie. find min. Update the minimum vote
+// check for is_tie(min). iterate over the candidates array, to see if there is a candidate not eliminated and not minimum, return false.
+// if there is a tie, print all the candidate name
+
+// have to reset all the vote counts back to zero - hmmm
+// tabulate the vote again, find is there a winner
+// calculate min winner of vote
+// check is there a tie?
+// eliminate candidate with min
+// and reset again and again
+
+
 // Max voters and candidates
 #define MAX_VOTERS 100
 #define MAX_CANDIDATES 9
