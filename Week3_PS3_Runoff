@@ -149,19 +149,15 @@ bool vote(int voter, int rank, string name)
 // Tabulate (update) votes counts for non-eliminated candidates -- not too sure
 void tabulate(void)
 {
-    int check = 0;
-    for (int i = 0; i < voter_count; i++)                   //e.g. voter_count = 5; Number of voters: 5
+    for (int i = 0; i < voter_count; i++)                  //e.g. voter_count = 5; Number of voters: 5
     {
-        if (!candidates[preferences[i][check]].eliminated)  //i = 0, check = 0 initially
+        for (int j = 0; j < candidate_count; j++)          //e.g. iterate over the ranks - Rank 1, Rank 2, Rank 3, etc.
         {
-            candidates[preferences[i][check]].votes++;
-            check = 0;
-        }
-        else
-        {
-            check++;
-            i--;
-        }
+            if (!candidates[preferences[i][j]].eliminated) //i = 0, check = 0 initially
+            {
+                candidates[preferences[i][j]].votes++;     //update votes for the particular candidate
+                break;                                     //break out of the loop after update
+            }
     }
 }
 
