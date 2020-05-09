@@ -152,21 +152,23 @@ bool vote(int voter, int rank, string name)
 
 // Tabulate votes for non-eliminated candidates
 // NOT TOO SURE!!
+// Tabulate votes for non-eliminated candidates
 void tabulate(void)
 {
-    // TODO
+    int check = 0;
     for (int i = 0; i < voter_count; i++)
     {
-        for (int j = 0; j < candidate_count; j++)
+        if (!candidates[preferences[i][check]].eliminated)
         {
-            if (candidates[preferences[i][j]].eliminated == false)
-            {
-                candidates[preferences[i][j]].votes += 1;
-                return;
-            }
+            candidates[preferences[i][check]].votes++;
+            check = 0;
+        }
+        else
+        {
+            check++;
+            i--;
         }
     }
-    return;
 }
 
 // Print the winner of the election, if there is one
@@ -204,15 +206,22 @@ int find_min(void)
 // NOT TOO SURE!! Have to use CS50 IDE. candidates[i].votes == min -> does this work?
 bool is_tie(int min)
 {
-    // TODO
     for (int i = 0; i < candidate_count; i++)
     {
-        if (candidates[i].eliminated == false && candidates[i].votes == min)
+        if (candidates[i].eliminated)
         {
-            return true;
+            continue;
+        }
+        else if (min == candidates[i].votes)
+        {
+            continue;
+        }
+        else
+        {
+            return 0;
         }
     }
-    return false;
+    return 1;
 }
 
 // Eliminate the candidate (or candidiates) in last place
