@@ -125,40 +125,34 @@ int main(int argc, string argv[])
     return 0;
 }
 
-// Record preference if vote is valid
-// Passed i, j and name of the candidate the user entered
-
-// NOT TOO SURE!!
+// Record preference if vote is valid -- not too sure about preferences[voter][rank] = i;
 bool vote(int voter, int rank, string name)
 {
-    for (int i = 0; i < candidate_count; i++)
+    for (int i = 0; i < candidate_count; i++)         //e.g. candidate count = 3: Alice, Bob, Charlie
     {
-        // check if name is among the candidates' names by comparing 2 strings
         if (strcmp(candidates[i].name, name) == 0)
         {
             //if found the person's name, add that number as a rank in pref array
-            //suppose a 2D array and pref array is adding pref number on a specific position
+            //add pref number on a specific position
             //e.g. preferences[0][0] = i
             // [i][][][]
             // [ ][][][]
             // [ ][][][]
             // [ ][][][]
-            preferences[voter][rank] = i;       //what does this mean?
+            preferences[voter][rank] = i;  //update the preferences array for the particular voter & rank
             return true;
         }
     }
-    return false;
+    return false;                //if the name given does not match with any candidate's name, return fales
 }
 
-// Tabulate votes for non-eliminated candidates
-// NOT TOO SURE!!
-// Tabulate votes for non-eliminated candidates
+// Tabulate (update) votes counts for non-eliminated candidates -- not too sure
 void tabulate(void)
 {
     int check = 0;
-    for (int i = 0; i < voter_count; i++)
+    for (int i = 0; i < voter_count; i++)                   //e.g. voter_count = 5; Number of voters: 5
     {
-        if (!candidates[preferences[i][check]].eliminated)
+        if (!candidates[preferences[i][check]].eliminated)  //i = 0, check = 0 initially
         {
             candidates[preferences[i][check]].votes++;
             check = 0;
