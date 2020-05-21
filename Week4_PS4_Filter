@@ -1,3 +1,5 @@
+**difficult -> need to REDO
+
 #include "helpers.h"
 #include <math.h>
 
@@ -23,19 +25,15 @@ void grayscale(int height, int width, RGBTRIPLE image[height][width])
 // Convert image to sepia
 void sepia(int height, int width, RGBTRIPLE image[height][width])
 {
-    int sepiaRed;
-    int sepiaGreen;
-    int sepiaBlue;
-
     // convert image by taking each pixel and computing new red, green, and bluve values
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
             // calculate sepiaRed, sepiaGreen, sepiaBlue
-            sepiaRed = round(.393 * image[i][j].rgbtRed + .769 * image[i][j].rgbtGreen + .189 * image[i][j].rgbtBlue);
-            sepiaGreen = round(.349 * image[i][j].rgbtRed + .686 * image[i][j].rgbtGreen + .168 * image[i][j].rgbtBlue);
-            sepiaBlue = round(.272 * image[i][j].rgbtRed + .534 * image[i][j].rgbtGreen + .131 * image[i][j].rgbtBlue);
+            int sepiaRed = round(.393 * image[i][j].rgbtRed + .769 * image[i][j].rgbtGreen + .189 * image[i][j].rgbtBlue);
+            int sepiaGreen = round(.349 * image[i][j].rgbtRed + .686 * image[i][j].rgbtGreen + .168 * image[i][j].rgbtBlue);
+            int sepiaBlue = round(.272 * image[i][j].rgbtRed + .534 * image[i][j].rgbtGreen + .131 * image[i][j].rgbtBlue);
 
             // if else statement works, otherwise, I can limit the calculation above and create a function called limit
             if (sepiaRed > 255)
@@ -57,7 +55,7 @@ void sepia(int height, int width, RGBTRIPLE image[height][width])
                 image[i][j].rgbtBlue = 255;
             }
             else
-                image[i][j].rgbtGreen = sepiaBlue;
+                image[i][j].rgbtBlue = sepiaBlue;
         }
     }
 }
@@ -67,6 +65,9 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 {
     // depends if width is even or odd
 
+    // temporary storage -> you need this 
+    RGBTRIPLE temp;
+
     // width is even
     if (width  % 2 == 0)
     {
@@ -74,7 +75,9 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
         {
             for (int j = 0, half = width / 2; j < half; j++)
             {
-                image[i][j] = image[i][width - i - 1];
+                temp = image[i][j];
+                image[i][j] = image[i][width - j - 1];
+                image[i][width -j -1] = temp;
             }
         }
     }
@@ -86,12 +89,13 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
             // round: if .1-.5, it will round down, if .6-.9, it will round up
             for (int j = 0, half = round(width / 2); j < half; j++)
             {
-                image[i][j] = image[i][width - i - 1];
+                temp = image[i][j];
+                image[i][j] = image[i][width - j - 1];
+                image[i][width -j -1] = temp;
             }
         }
     }
 }
-
 
 // Blur image -> a lot more complicated. Will need to review
 void blur(int height, int width, RGBTRIPLE image[height][width])
