@@ -69,7 +69,7 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
     // depends if width is even or odd
 
     // temporary storage -> you need this to store the LHS of the pixels
-    RGBTRIPLE temp;
+    RGBTRIPLE LHS_Temp;
 
     // width is even
     if (width  % 2 == 0)
@@ -79,11 +79,11 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
             for (int j = 0, half = width / 2; j < half; j++)
             {
                 //store the LHS of the pixels
-                temp = image[i][j];
+                LHS_Temp = image[i][j];
                 // take the RHS of the pixels and put it in the LHS
                 image[i][j] = image[i][width - j - 1];
                 // store the LHS of the pixels (from temp), and put it in the RHS 
-                image[i][width - j - 1] = temp;
+                image[i][width - j - 1] = LHS_Temp;
             }
         }
     }
@@ -95,9 +95,9 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
             // round: if .1-.5, it will round down, if .6-.9, it will round up
             for (int j = 0, half = round(width / 2); j < half; j++)
             {
-                temp = image[i][j];
+                LHS_Temp = image[i][j];
                 image[i][j] = image[i][width - j - 1];
-                image[i][width - j - 1] = temp;
+                image[i][width - j - 1] = LHS_Temp;
             }
         }
     }
