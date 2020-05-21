@@ -41,21 +41,25 @@ void sepia(int height, int width, RGBTRIPLE image[height][width])
                 image[i][j].rgbtRed = 255;
             }
             else
+            {
                 image[i][j].rgbtRed = sepiaRed;
-
+            }
             if (sepiaGreen > 255)
             {
                 image[i][j].rgbtGreen = 255;
             }
             else
+            {
                 image[i][j].rgbtGreen = sepiaGreen;
-
+            }
             if (sepiaBlue > 255)
             {
                 image[i][j].rgbtBlue = 255;
             }
             else
+            {
                 image[i][j].rgbtBlue = sepiaBlue;
+            }
         }
     }
 }
@@ -65,7 +69,7 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
 {
     // depends if width is even or odd
 
-    // temporary storage -> you need this 
+    // temporary storage -> you need this
     RGBTRIPLE temp;
 
     // width is even
@@ -77,7 +81,7 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
             {
                 temp = image[i][j];
                 image[i][j] = image[i][width - j - 1];
-                image[i][width -j -1] = temp;
+                image[i][width - j - 1] = temp;
             }
         }
     }
@@ -91,7 +95,7 @@ void reflect(int height, int width, RGBTRIPLE image[height][width])
             {
                 temp = image[i][j];
                 image[i][j] = image[i][width - j - 1];
-                image[i][width -j -1] = temp;
+                image[i][width - j - 1] = temp;
             }
         }
     }
