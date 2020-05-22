@@ -1,4 +1,4 @@
-// another blur solution
+// Another blur solution - not sure if it's worth spending the time breaking this algo for blur down. Skip it for now.
 
 void blur(int height, int width, RGBTRIPLE image[height][width])
 {
