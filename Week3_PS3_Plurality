@@ -70,13 +70,13 @@ int main(int argc, string argv[])
 // Update vote totals given a new vote
 bool vote(string name)
 {
-    // TODO
+    // TODO -> seems like the program somehow manages to run through the array/loop of all the names entered
     //Look for a candidate name input, if found, update vote total and return true. If not found, don't update and return false.
-    for (int j = 0; j < candidate_count; j++)
+    for (int i = 0; i < candidate_count; i++)
     {
-        if (strcmp(candidates[j].name, name) == 0)
+        if (strcmp(candidates[i].name, name) == 0)
         {
-            candidates[j].votes++;
+            candidates[i].votes++;
             return true;
         }
     }
@@ -89,20 +89,20 @@ void print_winner(void)
     int max_votes = 0;                                  //declaration
     // TODO
     // find value of max votes
-    for (int k = 0; k < candidate_count; k++)           //candidate_count = argc - 1
+    for (int i = 0; i < candidate_count; k++)           //candidate_count = argc - 1
     {
-        if (max_votes <= candidates[k].votes)
+        if (max_votes <= candidates[i].votes)
         {
-            max_votes = candidates[k].votes;
+            max_votes = candidates[i].votes;
         }
     }
 
     //print candidate names that match max value
-    for (int l = 0; l < candidate_count; l++)
+    for (int i = 0; i < candidate_count; i++)
     {
-        if (max_votes == candidates[l].votes)
+        if (max_votes == candidates[i].votes)
         {
-            printf("%s\n", candidates[l].name);
+            printf("%s\n", candidates[i].name);
         }
     }
     return;
