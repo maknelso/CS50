@@ -19,7 +19,6 @@
 // eliminate candidate with min
 // and reset again and again
 
-
 // Max voters and candidates
 #define MAX_VOTERS 100
 #define MAX_CANDIDATES 9
@@ -84,7 +83,6 @@ int main(int argc, string argv[])
     // Keep querying for votes
     for (int i = 0; i < voter_count; i++)
     {
-
         // Query for each rank
         for (int j = 0; j < candidate_count; j++)
         {
@@ -97,7 +95,6 @@ int main(int argc, string argv[])
                 return 4;
             }
         }
-
         printf("\n");
     }
 
@@ -143,7 +140,9 @@ int main(int argc, string argv[])
     return 0;
 }
 
-// 1) Record preference if vote is valid - pass i, j and name of the candidate the user entered -- not too sure
+// 1) Record preference if vote is valid
+// If name is a match, update global preferences array to indicate voter has the candidate
+// as their rank preferences - 0 is 1st, 1 is 2nd, etc.
 bool vote(int voter, int rank, string name)
 {
     for (int i = 0; i < candidate_count; i++)
@@ -151,13 +150,9 @@ bool vote(int voter, int rank, string name)
         // check if name is among the candidates' names by comparing 2 strings
         if (strcmp(candidates[i].name, name) == 0)
         {
-            //if found the person's name, add that number as a rank in pref array
-            //suppose a 2D array and pref array is adding pref number on a specific position
-            //e.g. preferences[0][0] = i
-            // [i][][][]
-            // [ ][][][]
-            // [ ][][][]
-            preferences[voter][rank] = i;       //what does this mean?
+            // if found the person's name, add that number as a rank in pref array
+            // for voter i, their 1st choice is preferences[i][0], 2nd choice is preferences[i][1]
+            preferences[voter][rank] = i;  // I believe, i goes into the rank
             return true;
         }
     }
