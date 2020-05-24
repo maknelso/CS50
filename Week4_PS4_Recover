@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>  //for BYTE to rep an 8-bit unsigned integer
+#include <stdbool.h>
+
+// typedef - used to define a type a new name
+typedef uint8_t BYTE;
+
+int main(int argc, char* argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage: ./recover image\n");
+        return 1;
+    }
+
+    // Create infile/remember filenames for picture - confused
+    //char* infile = argv[1];
+
+    // Open file (memory card)
+    // Returns a pointer to FILE and call it file and store contents of a file
+    FILE* infile = fopen(argv[1], "r");
+
+    if (infile == NULL)
+    {
+        printf("Sorry, cannot open file\n");
+        return 2;
+    }
+
+    // Create buffer and filename arrays
+    // Give myself an array of 512 bytes (512 bytes per block)
+    BYTE buffer[512];
+
+    // Create filename array - confused
+    char filename[8];
+
+    // Set counter for file name
+    int imageCount = 0;
+
+    // Initialize outpointer file
+    FILE *outptr = NULL;
+
+    // Read a block of the memory card image
+    while (fread(buffer, 512, 1, infile) == 1)
+    {
+        // If it's the end of the file, return 3
+        if (fread(buffer, 512, 1, infile) == 0 )
+        {
+            return 3;
+        }
+
+        // Check for JPEG headers - first 4 bytes
+        if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0)
+        {
+            // If we find another JPEG, close current file and read next one
+            if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0 && outptr != NULL)
+            {
+                fclose(outptr);
+                imageCount++;
+            }
+
+            // Open the next file for writing
+            if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0)
+            {
+                sprintf (filename, "%03i.jpg", imageCount);
+                outptr = fopen(filename, "w");
+
+            }
+
+            // Write if we have an open file (anytime)
+            if (outptr != NULL)
+            {
+                fwrite(buffer, 64, 1, outptr);
+            }
+        }
+    }
+    // Close last JPEG file
+    fclose(outptr);
+
+    // Close infile
+    fclose(infile);
+
+    // Successful
+    return 0;
+}
