@@ -1,85 +1,87 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>  //for BYTE to rep an 8-bit unsigned integer
-#include <stdbool.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdint.h>
+#include<cs50.h>
 
-// typedef - used to define a type a new name
+// Define the block_size as 512 bytes
+#define block_size 512
+
+// Make a struct
 typedef uint8_t BYTE;
 
 int main(int argc, char* argv[])
 {
     if (argc != 2)
     {
-        printf("Usage: ./recover image\n");
+        fprintf(stderr, "Usage ./recover image\n");
         return 1;
     }
 
-    // Create infile/remember filenames for picture - confused
-    //char* infile = argv[1];
+    // Open input file
+    FILE* raw_card_data = fopen(argv[1], "r");
 
-    // Open file (memory card)
-    // Returns a pointer to FILE and call it file and store contents of a file
-    FILE* infile = fopen(argv[1], "r");
-
-    if (infile == NULL)
+    if (raw_card_data == NULL)
     {
-        printf("Sorry, cannot open file\n");
+        printf("Sorry, could not open file\n");
         return 2;
     }
 
-    // Create buffer and filename arrays
-    // Give myself an array of 512 bytes (512 bytes per block)
-    BYTE buffer[512];
+    // Give myself a buffer of block_size (512 bytes)
+    BYTE buffer[block_size];
 
-    // Create filename array - confused
+    // To initialize counter recovered img number
+    int counter = 0;
+
+    // File pointer I'll be writing to
+    FILE *img;
+
+    // Name of jpeg is stored in this array 000.jpg\0 - don't fully understand
     char filename[8];
 
-    // Set counter for file name
-    int imageCount = 0;
-
-    // Initialize outpointer file
-    FILE *outptr = NULL;
-
-    // Read a block of the memory card image
-    while (fread(buffer, 512, 1, infile) == 1)
+    while (fread(buffer, sizeof(buffer), 1, raw_card_data) == 1)
     {
-        // If it's the end of the file, return 3
-        if (fread(buffer, 512, 1, infile) == 0 )
+        if(buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
-            return 3;
+            if (counter > 0)
+            {
+                // Close already open file
+                fclose(img);
+
+                // Name outfile using sprintf
+                sprintf(filename,"%03d.jpg", counter);
+                counter++;
+
+                // Open new file for writing
+                img = fopen(filename, "w");
+
+                // Write to outfile
+                fwrite(buffer, sizeof(buffer), 1, img);
+            }
+
+            if (counter == 0)
+            {
+                // Name outfile using sprintf
+                sprintf(filename,"%03d.jpg", counter);
+                counter++;
+
+                // Open newfile for writing
+                img = fopen(filename, "w");
+
+                // Write to outfile
+                fwrite(buffer, sizeof(buffer), 1, img);
+            }
         }
 
-        // Check for JPEG headers - first 4 bytes
-        if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0)
+        else if (counter > 0)
         {
-            // If we find another JPEG, close current file and read next one
-            if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0 && outptr != NULL)
-            {
-                fclose(outptr);
-                imageCount++;
-            }
-
-            // Open the next file for writing
-            if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && buffer[3] == 0xe0)
-            {
-                sprintf (filename, "%03i.jpg", imageCount);
-                outptr = fopen(filename, "w");
-
-            }
-
-            // Write if we have an open file (anytime)
-            if (outptr != NULL)
-            {
-                fwrite(buffer, 64, 1, outptr);
-            }
+            fwrite(buffer, sizeof(buffer), 1, img);
         }
+
     }
-    // Close last JPEG file
-    fclose(outptr);
 
-    // Close infile
-    fclose(infile);
+    fclose(img);
+    fclose(raw_card_data);
 
-    // Successful
+    //success
     return 0;
 }
