@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
         return 2;
     }
 
-    // Give myself a buffer of block_size (512 bytes)
+    // Give myself a buffer of block_size (512 bytes). Remember BYTE is essentially unsigned char
     BYTE buffer[block_size];
 
     // To initialize counter recovered img number
