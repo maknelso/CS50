@@ -29,23 +29,24 @@ int main(int argc, char* argv[])
 
     // Give myself a buffer of block_size (512 bytes). Remember BYTE is essentially unsigned char
     BYTE buffer[block_size];
+    
+    // FILE I will be writing to: The type of value is going to be the address of a FILE, called img.
+    FILE* img;
 
-    // To initialize counter recovered img number
+    // Allocate enough memory for name of jpeg is stored in this array "000.jpg\0"
+    char filename[8];
+    
+    // To initialize counter for 03?.jpg file name(s) 
     int counter = 0;
 
-    // File pointer I'll be writing to
-    FILE *img;
-
-    // Name of jpeg is stored in this array 000.jpg\0 - don't fully understand
-    char filename[8];
-
+    // While fread can read from buffer, read 512 bytes, from input raw_card_data:
     while (fread(buffer, sizeof(buffer), 1, raw_card_data) == 1)
     {
         if(buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
             if (counter > 0)
             {
-                // Close already open file
+                // Close already open file -> remember: img is address of FILE
                 fclose(img);
 
                 // Name outfile using sprintf
@@ -53,31 +54,30 @@ int main(int argc, char* argv[])
                 counter++;
 
                 // Open new file for writing
+                // fopen, opens a file and returns a pointer to it
                 img = fopen(filename, "w");
 
                 // Write to outfile
                 fwrite(buffer, sizeof(buffer), 1, img);
             }
-
             if (counter == 0)
             {
                 // Name outfile using sprintf
                 sprintf(filename,"%03d.jpg", counter);
                 counter++;
 
-                // Open newfile for writing
+                // Open new file for writing
                 img = fopen(filename, "w");
 
-                // Write to outfile
+                // Write to outfile, read from buffer
                 fwrite(buffer, sizeof(buffer), 1, img);
             }
         }
-
+        // If counter is bigger than 0 but first 4 bytes are not JPEG headers, just keep writing
         else if (counter > 0)
         {
             fwrite(buffer, sizeof(buffer), 1, img);
         }
-
     }
 
     fclose(img);
