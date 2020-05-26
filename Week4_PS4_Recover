@@ -1,3 +1,5 @@
+// Think I get everything. Need to replicate again though.
+
 #include<stdio.h>
 #include<stdlib.h>
 #include<stdint.h>
@@ -31,9 +33,9 @@ int main(int argc, char* argv[])
     BYTE buffer[block_size];
     
     // FILE I will be writing to: The type of value is going to be the address of a FILE, called img.
-    FILE* img;
+    FILE* outptr;
 
-    // Allocate enough memory for name of jpeg is stored in this array "000.jpg\0"
+    // Allocate enough memory for name of jpeg is stored in this array "000.jpg\0" - array is called filename
     char filename[8];
     
     // To initialize counter for 03?.jpg file name(s) 
@@ -46,8 +48,8 @@ int main(int argc, char* argv[])
         {
             if (counter > 0)
             {
-                // Close already open file -> remember: img is address of FILE
-                fclose(img);
+                // Close already open file -> remember: outptr is address of FILE
+                fclose(outptr);
 
                 // Name outfile using sprintf
                 sprintf(filename,"%03d.jpg", counter);
@@ -55,32 +57,35 @@ int main(int argc, char* argv[])
 
                 // Open new file for writing
                 // fopen, opens a file and returns a pointer to it
-                img = fopen(filename, "w");
+                outptr = fopen(filename, "w");
 
                 // Write to outfile
-                fwrite(buffer, sizeof(buffer), 1, img);
+                fwrite(buffer, sizeof(buffer), 1, outptr);
             }
             if (counter == 0)
             {
-                // Name outfile using sprintf
+                // Print not to the terminal, print to a string.
+                // String print. Instead of printing on console, it store output on/in char named filename
                 sprintf(filename,"%03d.jpg", counter);
                 counter++;
 
-                // Open new file for writing
-                img = fopen(filename, "w");
+                // Open new file with that file name just String Printed.
+                // Write to this new file, all the data you found in the memory card
+                outptr = fopen(filename, "w");
 
                 // Write to outfile, read from buffer
-                fwrite(buffer, sizeof(buffer), 1, img);
+                fwrite(buffer, sizeof(buffer), 1, outptr);
             }
         }
-        // If counter is bigger than 0 but first 4 bytes are not JPEG headers, just keep writing
+        // If counter is bigger than 0 but first 4 bytes are not JPEG headers, just keep writing another 512 bytes. 
+        // Remember slack space! There is wasted space if the JPEG does not take up all 512 byte block.
         else if (counter > 0)
         {
-            fwrite(buffer, sizeof(buffer), 1, img);
+            fwrite(buffer, sizeof(buffer), 1, outptr);
         }
     }
 
-    fclose(img);
+    fclose(outptr);
     fclose(raw_card_data);
 
     //success
