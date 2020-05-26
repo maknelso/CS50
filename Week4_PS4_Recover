@@ -42,6 +42,10 @@ int main(int argc, char* argv[])
     int counter = 0;
 
     // While fread can read from buffer, read 512 bytes, from input raw_card_data:
+    // fread returns the number of items of size (sizeof(buffer)) that were read
+    // We currently try to read number (1) elements of size (sizeof(buffer))
+    // So most likely, if fread is able to read all of that data, it will return back to you number (1).
+    // Or, if return number differs from 1, then either an error had occured of End of File was reached.
     while (fread(buffer, sizeof(buffer), 1, raw_card_data) == 1)
     {
         if(buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
