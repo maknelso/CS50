@@ -1,0 +1,46 @@
+#include <stdio.h>  //for printf
+#include <cs50.h>   //for get_float
+#include <math.h>   //for round fx
+
+int main (void)
+{
+    // Declare variable dollars as float
+    float dollars;                                              
+    // do-while loop: prompt user for change and keep prompting if dollars is less than $0.01
+    do                                                          
+    {
+        dollars = get_float ("How much change is owed? ");
+    }
+    while (dollars <= 0.01);
+    
+    // Convert float dollars to int cents
+    int cents = round(dollars * 100);                           
+    // Initialize coins counter as 0, declare variable as int
+    int coins = 0;                                              
+
+    // Series of while: while >= 25, increase coins counter by 1 and decrease cents by 25 cents
+    while (cents >= 25)                                         
+    {                                                           
+        cents -= 25;
+        coins++;
+    }
+    // Dimes
+    while (cents >= 10)                                         
+    {
+        cents -= 10;
+        coins++;
+    // Nickels    
+    }
+    while (cents >= 5)                                          
+    {
+        cents -= 5;
+        coins++;
+    }
+    // Pennies
+    while (cents >= 1)                                          
+    {
+        cents -= 1;
+        coins++;
+    }
+    printf("Minimum number of coins is %i\n", coins);
+}
