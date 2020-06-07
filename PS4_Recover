@@ -1,0 +1,97 @@
+// Think I get everything. Need to replicate again though.
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<stdint.h>
+#include<cs50.h>
+
+// Define the block_size as 512 bytes
+#define block_size 512
+
+// Make a struct -> give me a new data type, type uint8_t (it is unsigned char - # from 0 to 255 instead of -128 to 127), named BYTE
+typedef uint8_t BYTE;
+
+int main(int argc, char* argv[])
+{
+    if (argc != 2)
+    {
+        fprintf(stderr, "Usage ./recover image\n");
+        return 1;
+    }
+
+    // Open input file: open the file the human typed @ prompt and read it
+    // Give me a pointer to raw_card_data called FILE -> for now, think of it as: stores contents of a file for me
+    FILE *raw_card_data = fopen(argv[1], "r");
+
+    if (raw_card_data == NULL)
+    {
+        printf("Sorry, could not open file\n");
+        return 2;
+    }
+
+    // Give myself a buffer of block_size (512 bytes). Remember BYTE is essentially unsigned char
+    BYTE buffer[block_size];
+    
+    // FILE I will be writing to: The type of value is going to be the address of a FILE, called img.
+    FILE* outptr;
+
+    // Allocate enough memory for name of jpeg is stored in this array "000.jpg\0" - array is called filename
+    char filename[8];
+    
+    // To initialize counter for 03?.jpg file name(s) 
+    int counter = 0;
+
+    // While fread can read from buffer, read 512 bytes, from input raw_card_data:
+    // fread returns the number of items of size (sizeof(buffer)) that were read
+    // We currently try to read number (1) elements of size (sizeof(buffer))
+    // So most likely, if fread is able to read all of that data, it will return back to you number (1).
+    // Or, if return number differs from 1, then either an error had occured of End of File was reached.
+    while (fread(buffer, sizeof(buffer), 1, raw_card_data) == 1)
+    {
+        if(buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
+        {
+            if (counter > 0)
+            {
+                // Close already open file -> remember: outptr is address of FILE
+                fclose(outptr);
+
+                // Name outfile using sprintf
+                sprintf(filename,"%03d.jpg", counter);
+                counter++;
+
+                // Open new file for writing
+                // fopen, opens a file and returns a pointer to it
+                outptr = fopen(filename, "w");
+
+                // Write to outfile
+                fwrite(buffer, sizeof(buffer), 1, outptr);
+            }
+            if (counter == 0)
+            {
+                // Print not to the terminal, print to a string.
+                // String print. Instead of printing on console, it store output on/in char named filename
+                sprintf(filename,"%03d.jpg", counter);
+                counter++;
+
+                // Open new file with that file name just String Printed.
+                // Write to this new file, all the data you found in the memory card
+                outptr = fopen(filename, "w");
+
+                // Write to outfile, read from buffer
+                fwrite(buffer, sizeof(buffer), 1, outptr);
+            }
+        }
+        // If counter is bigger than 0 but first 4 bytes are not JPEG headers, just keep writing another 512 bytes. 
+        // Remember slack space! There is wasted space if the JPEG does not take up all 512 byte block.
+        else if (counter > 0)
+        {
+            fwrite(buffer, sizeof(buffer), 1, outptr);
+        }
+    }
+
+    fclose(outptr);
+    fclose(raw_card_data);
+
+    //success
+    return 0;
+}
