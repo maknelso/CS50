@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <cs50.h>
+#include <string.h>
+#include <stdlib.h>     //converts a string into a number - for atoi() fx
+#include <ctype.h>      //for isdigit() fx
+
+int main(int argc, string argv[])
+{
+    // Get the key from command line argument
+    if (argc != 2)
+    {
+        printf("Usage: ./caesar key\n");
+        return 1;   //end
+    }
+    // Command line will only accept 2 argc
+    else if (argc == 2)
+    {
+        int key = atoi(argv[1]);
+        // Stores a bool to use as an on-off switch if we detect incorrect input
+        bool isKeyValid = true;
+        // For loop to check each digit if it's an int
+        for (int i = 0, n = strlen(argv[1]); i < n; i++)
+        {
+            // If isdigit detects a non-int it'll set bool to false and end loop
+            if (isdigit(argv[1][i]) == false)               //****TRICK IS HERE: argv[1][i] not argv[i]!!!!
+            {
+                isKeyValid = false;
+                i = n;
+                printf("Usage: ./caesar key\n");
+                return 1;   //end
+            }
+        }
+        // Bool isKeyValid is true, unless it is turned off (because there is a non-int)
+        if (isKeyValid)
+        {
+            // Prompt the user to type plaintext
+            string plaintext = get_string("plaintext: ");
+            // Encipher the plaintext
+            printf("ciphertext: ");
+
+            for (int j = 0, o = strlen(plaintext); j < o; j++)
+            {
+                char ciphertext[o];
+
+                // isalpha returns a 0 if it is NOT an alphabet
+                if (isalpha(plaintext[j]) == 0)     
+                {
+                    ciphertext[j] = plaintext[j];
+                }
+                // isupper returns > 0, if it is an upper case
+                else if (isupper(plaintext[j]) > 0)
+                {
+                    // Implement loop: ci = (pi + k) % 26
+                    // Convert ASCII to alphabetical index for upper
+                    plaintext[j] = (int) plaintext[j] - 65;
+                    // Shift alphabetical index using formula
+                    ciphertext[j] = ((int) plaintext[j] + key) % 26;
+                    // Convert result back to ASCII
+                    ciphertext[j] = ciphertext[j] + 65;
+                }
+                // Else - this means it is lower case
+                else    
+                {
+                    plaintext[j] = (int) plaintext[j] - 97;
+                    ciphertext[j] = ((int) plaintext[j] + key) % 26;
+                    ciphertext[j] = ciphertext[j] + 97;
+                }
+                printf("%c", ciphertext[j]);
+            }
+            printf("\n");
+        }
+    }
+}
