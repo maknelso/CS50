@@ -1,0 +1,260 @@
+// Another blur solution - not sure if it's worth spending the time breaking this algo for blur down. Skip it for now.
+
+void blur(int height, int width, RGBTRIPLE image[height][width])
+{
+    RGBTRIPLE ogImage[height][width];
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            ogImage[i][j] = image[i][j];
+        }
+    }
+
+    for (int i = 0, red, green, blue, counter; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            red = green = blue = counter = 0;
+
+            if (i >= 0 && j >= 0)
+            {
+                red += ogImage[i][j].rgbtRed;
+                green += ogImage[i][j].rgbtGreen;
+                blue += ogImage[i][j].rgbtBlue;
+                counter++;
+            }
+            if (i >= 0 && j - 1 >= 0)
+            {
+                red += ogImage[i][j-1].rgbtRed;
+                green += ogImage[i][j-1].rgbtGreen;
+                blue += ogImage[i][j-1].rgbtBlue;
+                counter++;
+            }
+            if ((i >= 0 && j + 1 >= 0) && (i >= 0 && j + 1 < width))
+            {
+                red += ogImage[i][j+1].rgbtRed;
+                green += ogImage[i][j+1].rgbtGreen;
+                blue += ogImage[i][j+1].rgbtBlue;
+                counter++;
+            }
+            if (i - 1 >= 0 && j >= 0)
+            {
+                red += ogImage[i-1][j].rgbtRed;
+                green += ogImage[i-1][j].rgbtGreen;
+                blue += ogImage[i-1][j].rgbtBlue;
+                counter++;
+            }
+            if (i - 1 >= 0 && j - 1 >= 0)
+            {
+                red += ogImage[i-1][j-1].rgbtRed;
+                green += ogImage[i-1][j-1].rgbtGreen;
+                blue += ogImage[i-1][j-1].rgbtBlue;
+                counter++;
+            }
+            if ((i - 1 >= 0 && j + 1 >= 0) && (i - 1 >= 0 && j + 1 < width))
+            {
+                red += ogImage[i-1][j+1].rgbtRed;
+                green += ogImage[i-1][j+1].rgbtGreen;
+                blue += ogImage[i-1][j+1].rgbtBlue;
+                counter++;
+            }
+            if ((i + 1 >= 0 && j >= 0) && (i + 1 < height && j >= 0))
+            {
+                red += ogImage[i+1][j].rgbtRed;
+                green += ogImage[i+1][j].rgbtGreen;
+                blue += ogImage[i+1][j].rgbtBlue;
+                counter++;
+            }
+            if ((i + 1 >= 0 && j - 1 >= 0) && (i + 1 < height && j - 1 >= 0))
+            {
+                red += ogImage[i+1][j-1].rgbtRed;
+                green += ogImage[i+1][j-1].rgbtGreen;
+                blue += ogImage[i+1][j-1].rgbtBlue;
+                counter++;
+            }
+            if ((i + 1 >= 0 && j + 1 >= 0) && (i + 1 < height && j + 1 < width))
+            {
+                red += ogImage[i+1][j+1].rgbtRed;
+                green += ogImage[i+1][j+1].rgbtGreen;
+                blue += ogImage[i+1][j+1].rgbtBlue;
+                counter++;
+            }
+
+            image[i][j].rgbtRed = round(red / (counter * 1.0));
+            image[i][j].rgbtGreen = round(green / (counter * 1.0));
+            image[i][j].rgbtBlue = round(blue / (counter * 1.0));
+        }
+    }
+
+    return;
+}
+
+***************************************************************************
+
+// did not fully get blur
+#include "helpers.h"
+#include <math.h>
+
+// Convert image to grayscale
+void grayscale(int height, int width, RGBTRIPLE image[height][width])
+{
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            // averages the color intensity and then applies the same value to all the colors to get gray
+            float rgbtGray = round((float) (image[i][j].rgbtRed + image[i][j].rgbtGreen + image[i][j].rgbtBlue) / 3.00);
+
+            // put the rgbtGray value back into the image's red, green, blue
+            image[i][j].rgbtRed = rgbtGray;
+            image[i][j].rgbtGreen = rgbtGray;
+            image[i][j].rgbtBlue = rgbtGray;
+        }
+    }
+}
+
+// Convert image to sepia
+void sepia(int height, int width, RGBTRIPLE image[height][width])
+{
+    // convert image by taking each pixel and computing new red, green, and bluve values
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            // calculate sepiaRed, sepiaGreen, sepiaBlue
+            int sepiaRed = round(.393 * image[i][j].rgbtRed + .769 * image[i][j].rgbtGreen + .189 * image[i][j].rgbtBlue);
+            int sepiaGreen = round(.349 * image[i][j].rgbtRed + .686 * image[i][j].rgbtGreen + .168 * image[i][j].rgbtBlue);
+            int sepiaBlue = round(.272 * image[i][j].rgbtRed + .534 * image[i][j].rgbtGreen + .131 * image[i][j].rgbtBlue);
+
+            // if else statement works, otherwise, I can limit the calculation above and create a function called limit
+            if (sepiaRed > 255)
+            {
+                image[i][j].rgbtRed = 255;
+            }
+            else
+            {
+                image[i][j].rgbtRed = sepiaRed;
+            }
+            if (sepiaGreen > 255)
+            {
+                image[i][j].rgbtGreen = 255;
+            }
+            else
+            {
+                image[i][j].rgbtGreen = sepiaGreen;
+            }
+            if (sepiaBlue > 255)
+            {
+                image[i][j].rgbtBlue = 255;
+            }
+            else
+            {
+                image[i][j].rgbtBlue = sepiaBlue;
+            }
+        }
+    }
+}
+
+// Reflect image horizontally
+void reflect(int height, int width, RGBTRIPLE image[height][width])
+{
+    // depends if width is even or odd
+
+    // temporary storage -> you need this to store the LHS of the pixels
+    RGBTRIPLE LHS_Temp;
+
+    // width is even
+    if (width  % 2 == 0)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0, half = width / 2; j < half; j++)
+            {
+                //store the LHS of the pixels
+                LHS_Temp = image[i][j];
+                // take the RHS of the pixels and put it in the LHS
+                image[i][j] = image[i][width - j - 1];
+                // store the LHS of the pixels (from temp), and put it in the RHS 
+                image[i][width - j - 1] = LHS_Temp;
+            }
+        }
+    }
+    // width is odd
+    if (width % 2 != 0)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            // round: if .1-.5, it will round down, if .6-.9, it will round up
+            for (int j = 0, half = round(width / 2); j < half; j++)
+            {
+                LHS_Temp = image[i][j];
+                image[i][j] = image[i][width - j - 1];
+                image[i][width - j - 1] = LHS_Temp;
+            }
+        }
+    }
+}
+
+// Blur image -> a lot more complicated. Will need to review
+void blur(int height, int width, RGBTRIPLE image[height][width])
+{
+    int sumBlue;
+    int sumGreen;
+    int sumRed;
+    float counter;
+    
+    // create a temporary table of colors to not alter the calculations
+    RGBTRIPLE temp[height][width];
+
+    // this part is complicated
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            sumBlue = 0;
+            sumGreen = 0;
+            sumRed = 0;
+            counter = 0.00;
+
+            // sums values of the pixel and 8 neighboring ones, skips iteration if it goes outside the pic
+            for (int k = -1; k < 2; k++)
+            {
+                if (i + k < 0 || i + k > height - 1)
+                {
+                    continue;
+                }
+
+                for (int h = -1; h < 2; h++)
+                {
+                    if (j + h < 0 || j + h > width - 1)
+                    {
+                        continue;
+                    }
+
+                    sumBlue += image[i + k][j + h].rgbtBlue;
+                    sumGreen += image[i + k][j + h].rgbtGreen;
+                    sumRed += image[i + k][j + h].rgbtRed;
+                    counter++;
+                }
+            }
+
+            // averages the sum to make picture look blurrier -> this seems to make sense
+            //store in the temp array -> sum of the Blue / number of pixels
+            temp[i][j].rgbtBlue = round(sumBlue / counter);
+            temp[i][j].rgbtGreen = round(sumGreen / counter);
+            temp[i][j].rgbtRed = round(sumRed / counter);
+        }
+    }
+
+    //copies values from temporary table -> this part makes sense.
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            image[i][j].rgbtBlue = temp[i][j].rgbtBlue;
+            image[i][j].rgbtGreen = temp[i][j].rgbtGreen;
+            image[i][j].rgbtRed = temp[i][j].rgbtRed;
+        }
+    }
+}
