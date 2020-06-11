@@ -1,4 +1,98 @@
-// Think I get everything. Need to replicate again though.
+//2nd time doing it
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <cs50.h>
+
+const int BLOCK = 512;
+
+// Give me a new data type called BYTE (which is an unsigned char)
+typedef uint8_t BYTE;
+
+int main(int argc, char *argv[])
+{
+        if (argc != 2)
+        {
+            printf("Usage: ./recover image\n");
+            return 1;
+        }
+
+        // Open memory card
+        FILE *file = fopen (argv[1], "r");
+        if (file == NULL)
+        {
+            return 1;
+        }
+
+        // Give myself an array of 512 bytes
+        BYTE buffer[BLOCK];
+
+        // Declare img as a pointer
+        FILE *img;
+
+        // Allocate memory for name of jpeg
+        char filename[8];
+
+        // Initialize counter
+        int counter = 0;
+
+        // Trick here: while loop: seems like fread continously reads....
+        while (fread(buffer, sizeof(buffer), 1, file) == 1)
+        {
+            // if if if - not mutually exclusive, if condition is true, do it
+            // Check if first 4 bytes starts with JPEG header
+            if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff & (buffer[3] & 0xf0) == 0xe0)
+            {
+                // file already created - this has to be in front (not 100% sure why)
+                if (counter > 0)
+                {
+                    // close previous file
+                    fclose(img);
+
+                    // Create a NEW file to write to
+                    sprintf(filename, "%03i.jpg", counter);
+                    counter++;
+
+                    // Open new file
+                    img = fopen(filename, "w");
+
+                    // Write in new file
+                    fwrite (buffer, sizeof(buffer), 1, img);
+                }
+
+                // no file created yet
+                if (counter == 0)
+                {
+                    // Create a NEW file to write to - called filename
+                    sprintf(filename, "%03i.jpg", counter);
+                    counter++;
+
+                    // Open new file - store contents of filename in a pointer named img
+                    img = fopen(filename, "w");
+
+                    // Write in new file - write to img pointer until you hit a new JPEG header
+                    fwrite (buffer, sizeof(buffer), 1, img);
+                }
+            }
+            // Trick here: else if (mutually exclusive). First 4 bytes are NOT JPEG header, keep writing another 512 bytes
+            // Need ( ) after else if
+            else if (counter > 0)
+            {
+                fwrite(buffer, sizeof(buffer), 1, img);
+            }
+        }
+
+        // Close all files
+        fclose(img);
+        fclose(file);
+
+        return 0;
+}
+
+-----------------------------------------------
+
+// 1st time doing it
 
 #include<stdio.h>
 #include<stdlib.h>
