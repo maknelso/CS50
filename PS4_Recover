@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
         // Initialize counter
         int counter = 0;
 
-        // Trick here: while loop: seems like fread continously reads....
+        // Trick here: while loop => at the end of every if, else if stmt there is an fwrite of 512 bytes
         while (fread(buffer, sizeof(buffer), 1, file) == 1)
         {
             // if if if - not mutually exclusive, if condition is true, do it
@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
         return 0;
 }
 
------------------------------------------------
+--------------------------------------------------------------------------------
 
 // 1st time doing it
 
