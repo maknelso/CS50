@@ -3,7 +3,8 @@
 
 int main(void)
 {
-    int n;
+    // declaration
+    int n;          
     do
     {
         n = get_int("Height = ");
