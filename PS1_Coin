@@ -4,8 +4,9 @@
 
 int main (void)
 {
-    // Declare variable dollars as float
-    float dollars;                                              
+    // declaration
+    float dollars;    
+    
     // do-while loop: prompt user for change and keep prompting if dollars is less than $0.01
     do                                                          
     {
