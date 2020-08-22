@@ -1,5 +1,43 @@
 Lecture 2 - Arrays (done in C)
 
+In real world, you write tests, to ensure that your program is running correctly.
+
+In CS50 IDE: red dot, you need to CTRL S.
+
+- Use help50
+=> help50 make buggy0
+
+debugging:
+1st solution: use printf
+
+//Buggy example for printf and debug50
+#include <stdio.h>
+int main (void)
+{
+    for (int i = 0; i <= 10; i++)
+    {
+        printf("i is now %i: ", i);                 //using printf -> we see that the first i starts at 0 
+        printf("#\n");
+    }
+}
+
+2nd solution: CS50 IDE (integrated development environment) debugging tools
+- Click the red dot on line with int main(void)   => breakpoint 
+- tell computer in advance, STOP at the red dot. And allow the human to step through the program step by step.
+
+run: debug50 ./buggy2
+
+-> on the RHS:
+variable: i
+value: 0 
+type: int 
+
+step over icon -> execute it 1 by 1.
+
+i becomes 1
+
+CTRL C to exit
+
 Starting in 54:33 - dynamically asking for score and giving you an average
 
 //2nd time doing it:
