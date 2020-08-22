@@ -1,5 +1,6 @@
-#include <stdio.h>
-#include <cs50.h>
+#include <stdio.h>      // a library - stdio.h is a header file written in C with file extension ending in .h that among other things
+                        // declares that it has a prototype for printf. So CLANG knows what printf is. 
+#include <cs50.h>       // declares it has prototypes for functions like get_string, a data type called string, etc.
 #include <string.h>
 #include <stdlib.h>     //converts a string into a number - for atoi() fx
 #include <ctype.h>      //for isdigit() fx
