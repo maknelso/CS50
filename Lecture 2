@@ -1,6 +1,7 @@
 Lecture 2 - Arrays (done in C)
 
-In real world, you write tests, to ensure that your program is running correctly.
+- Try not to repeat yourself. Do not hardcode.
+- In real world, you write tests, to ensure that your program is running correctly.
 
 In CS50 IDE: red dot, you need to CTRL S.
 
@@ -38,6 +39,36 @@ i becomes 1
 
 CTRL C to exit
 
+40:00 -> CHAR use single quote, STRING use double quote
+
+42:30
+#include <stdio.h>
+
+int main(void)
+{
+    char c1 = 'H';
+    char c2 = 'I';
+    char c3 = '!';
+    printf("%i %i %i\n", (int) c1, (int) c2, (int) c3);     //casting -> converted one data type to another -> do not need to explicitly write (int)
+}
+
+50:00
+#include <cs50.h>
+#include <stdio.h>
+
+const int N = 3;        //global variable (int main void) -> this is a constant
+
+int main(void)
+{
+    int scores[N];      //enough space for 3 variables
+    scores[0] = 72;     //0-index
+    scores[1] = 73;
+    scores[2] = 33;
+
+    printf("Average: %i\n", (scores[0] + scores[1] + scores[2]) / N);
+}
+
+
 Starting in 54:33 - dynamically asking for score and giving you an average
 
 //2nd time doing it:
@@ -45,13 +76,13 @@ Starting in 54:33 - dynamically asking for score and giving you an average
 #include <cs50.h>
 #include <stdio.h>
 
-float average(int length, int array[]);             //prototype - end with semicolon
+float average(int length, int array[]);              //prototype - end with semicolon
 
 int main (void)
 {
     int n = get_int("Number of scores: ");            //prompt user for number of scores
     
-    int scores[n];                                    //declare array with size n
+    int scores[n];                                    //initialize or declare array with size n
     
     for (int i = 0; i < n; i++)
     {
@@ -59,20 +90,20 @@ int main (void)
     }
 
     printf("Average: %.1f\n", average(n, scores));     //average needs length of array (n) and array itself (scores - name of array)
+                                                       //.1 -> if it's 99.49 it rounds to 99.5
 }
 
-//create average function - initialize it as a float
+//create custom average function - initialize it as a float
 //need to know: 1)length of the array, 2)array itself - length and array are just names. It takes two input: an int, and an array of ints
-float average(int length, int array[])                  
+float average(int length, int array[])                  //unlike Java or Python, in C they do not remember the length of array
 {
     int sum = 0;                                        //initialize sum
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < length; i++)                    //int throws away all decimals
     {
         sum += array[i];                                //sum = sum + array[i];
     }
-    return (float) sum / (float) length;                //the fx named average outputs a float (above)
+    return (float) sum / (float) length;                //the fx named average outputs a float (above) -> do not need to explicitly cast both as (float), just one is enough
 }
-
 -----------------------------------------------------------------------------------------------------------
 
 //1st time doing it:
@@ -95,10 +126,9 @@ int main(void)
     printf("Average: %.1f\n", average(n, scores)); //n = len of array, scores = name of array, .1 shows 1 decimal -> not sure about average(n, scores) why do we need it?
 }
 
-
 float average(int length, int array[])          //returns float named average (create average). In C, arrays do not remember own length
 {
-    int sum = 0;                                //start counting from 0
+    int sum = 0;                                //start counting from 0 -> initialize
     for (int i = 0; i < length; i++)
     {
         sum += array[i];                        //sum = sum + next item in array - get bracket [0]+[1]+[2] to sum
@@ -109,9 +139,25 @@ float average(int length, int array[])          //returns float named average (c
 Example finished @  1:04:00
 -----------------------------------------------------------------------------------------------------------------
 
+1:14:15 - names.c example
+#include <cs50.h>       //because we are using string
+#include <stdio.h>
+
+int main(void)
+{
+    string names[4];
+    names[0] = "EMMA";
+    names[1] = "RODRIGO";
+    names[2] = "BRIAN";
+    names[3] = "DAVID";
+    
+    printf("%s\n", names[0]);               
+    printf("%c%c%c%c\n", names[0][0], names[0][1], names[0][2], names[0][3], names[0][4]);    
+    //first bracket index to array of names (index means go to certain location in array)
+    //second bracket, within that string treat it as an array of character and get 0th character
+}
 
 Around 1:20:00 - string.c example
-
 Print out individual character examples
 
 #include <cs50.h>
