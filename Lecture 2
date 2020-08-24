@@ -181,7 +181,7 @@ or
 
 #include <cs50.h>
 #include <stdio.h>
-#include <string.h>                         //for strlen
+#include <string.h>                         //for strlen and other string related functions
 
 int main(void)
 {
@@ -192,13 +192,16 @@ int main(void)
     {
         printf("%c", s[i]);
     }
-printf("\n");
+printf("\n");                                       //put it at the very end of the program, so we only get it once
 }
 
 ----------------------------------------------------------------------------------------
 
-Upper case example
+Upper case example:
 
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 int main (void)
 {
     string s = get_string ("Before: ");
@@ -219,15 +222,61 @@ printf("\n");
 
 There is already a function in C that can do uppercase
 
-#include <ctype.h>
+#include <ctype.h>      //for toupper fx
 
 for
 {
     printf("%c", toupper(s[i]));
 }
 
+1:35:00 - command-line argument
 
+- essentially 1 or more words that you type at the prompt after the program you care about running
 
+#include <stdio.h>
+int main(int argc, string argv[])
+{
+    ....
+}
 
+----------------------------------------
+#include <cs50.h>
+#include <stdio.h>
+
+int main(int argc, string argv[])
+{
+    if (argc == 2)
+    {
+        printf("hello, %s\n", argv[1]);
+    }
+    else
+    {
+        printf("hello, world\n");
+    }
+}
+
+*When you run a program written in C, and you specify one or more words AFTER your program's name, you are handed those words
+in an array, called argv, and you are told how many words the human typed in argc.
+
+help50, style50, make50 -> are implemented with code similar to argc, argv. 
+
+Why does main return an int? Not that important, by default main returns 0. Zeros in computer typically means all is well.
+
+------------------
+exit.c
+
+#include <cs50.h>
+#include <stdio.h>
+
+int main(int argc, string argv[])
+{
+    if (argc != 2)                                  //typed 2 words at the prompt
+    {
+        printf("missing command-line arguemnt\n");
+        return 1;
+    }
+    printf("hello, %s\n", argv[1]);                 //program's name is argv[0]
+    return 0;
+}
 
 
