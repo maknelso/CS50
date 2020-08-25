@@ -5,8 +5,9 @@
 
 int main(void)
 {
+    // declaration
     int letter_count = 0;
-    int word_count = 1;
+    int word_count = 1;     //first space means second words because the last word does not continue with a space
     int sentence_count = 0;
 
     string s = get_string("Text: ");
@@ -32,6 +33,8 @@ int main(void)
     // Calculate the Coleman-Liau index: [(0.0588 * L) - (0.0296 * S) - 15.8]
     int cl_index = round((100*0.0588 * letter_count/word_count) - (100*0.296 * sentence_count/word_count) - 15.8);
 
+    // if, else if, else is mutually exclusive 
+    // if, if, else is NOT mutually exclusive
     if (cl_index >= 16)
     {
         printf("Grade 16+\n");
