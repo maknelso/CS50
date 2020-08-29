@@ -45,7 +45,9 @@ int main (int argc, string argv[])
     // iterate each character of the plaintext
     for (int i = 0, n = strlen(p); i < n; i++)
     {
+        // declaration
         char c[i];
+        
         // if not an alphabet => not an alphabet returns a 0
         if (isalpha(p[i]) == 0)
         {
@@ -71,9 +73,6 @@ int main (int argc, string argv[])
     printf("\n");
     return 0;
 }
-
-
-
 
 
 
