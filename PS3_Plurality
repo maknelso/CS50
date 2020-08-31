@@ -5,7 +5,7 @@
 // Max number of candidates an election can have
 #define MAX 9
 
-// Candidates have name and vote count
+// Data type: candidate => candidate have name and vote count
 typedef struct
 {
     string name;
@@ -13,7 +13,7 @@ typedef struct
 }
 candidate;
 
-// Array of candidates
+// Array of candidates (type is candidate, name of array is candidates)
 candidate candidates[MAX];
 
 // Number of candidates
@@ -32,8 +32,7 @@ int main(int argc, string argv[])
         return 1;
     }
 
-//Use this example: ./plurality Alice Bob Charlie
-
+    //Use this example: ./plurality Alice Bob Charlie
     // Populate array of candidates
     candidate_count = argc - 1;                         //first argc is "./plurality", so candidate_count = argc - 1. E.g. 3 (4 -1)
 
@@ -70,10 +69,10 @@ int main(int argc, string argv[])
 // Update vote totals given a new vote
 bool vote(string name)
 {
-    // TODO -> seems like the program somehow manages to run through the array/loop of all the names entered
     //Look for a candidate name input, if found, update vote total and return true. If not found, don't update and return false.
     for (int i = 0; i < candidate_count; i++)
     {
+        // strcmp function to compare strings, cannnot just use ==
         if (strcmp(candidates[i].name, name) == 0)
         {
             candidates[i].votes++;
@@ -87,7 +86,7 @@ bool vote(string name)
 void print_winner(void)
 {
     int max_votes = 0;                                  //declaration
-    // TODO
+    
     // find value of max votes
     for (int i = 0; i < candidate_count; k++)           //candidate_count = argc - 1
     {
@@ -96,7 +95,6 @@ void print_winner(void)
             max_votes = candidates[i].votes;
         }
     }
-
     //print candidate names that match max value
     for (int i = 0; i < candidate_count; i++)
     {
