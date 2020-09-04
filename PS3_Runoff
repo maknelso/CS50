@@ -1,3 +1,21 @@
+Notes:
+
+separate functions:
+
+int find_min(void)  -> you have to return an int
+bool print_winner(void) -> you have to return a bool (e.g. return true; return false;)
+
+== means equality
+= means to assign
+
+// if eliminated status is false
+if (candidates[i].eliminated == false) 
+{
+    // assign true to the candidate's eliminated status
+    candidates[i].eliminated = true; 
+}
+
+
 // this does not seem to work
 bool vote(int voter, int rank, string name)
 {
@@ -163,6 +181,7 @@ bool vote(int voter, int rank, string name)
 // Tabulate votes for non-eliminated candidates
 void tabulate(void)
 {
+    // for the number of voters
     for (int i = 0, m = voter_count; i < m; i++)
     {
         for (int j = 0, n = candidate_count; j < n; j++)
@@ -170,7 +189,7 @@ void tabulate(void)
             if (candidates[preferences[i][j]].eliminated == false)
             {
                 candidates[preferences[i][j]].votes++;
-                // need this break
+                // need this break -> breaks out of the inner loop and goes to the outter loop
                 break;
             }
         }
@@ -236,25 +255,7 @@ void eliminate(int min)
     return;
 }
 
-
-
-Notes:
-
-separate functions:
-
-int find_min(void)  -> you have to return an int
-bool print_winner(void) -> you have to return a bool (e.g. return true; return false;)
-
-== means equality
-= means to assign
-
-// if eliminated status is false
-if (candidates[i].eliminated == false) 
-{
-    // assign true to the candidate's eliminated status
-    candidates[i].eliminated = true; 
-}
-
+-----------------------------------------------------------------------------------------------------------
 
 1st time doing it:
 
