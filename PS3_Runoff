@@ -1,5 +1,8 @@
 Notes:
 
+return; -> breaks out of the whole function
+break; -> only breaks out of the inner loop.... I think...
+
 separate functions:
 
 int find_min(void)  -> you have to return an int
