@@ -111,6 +111,7 @@ int main(int argc, string argv[])
             string name = get_string("Rank %i: ", j + 1);
 
             // Record vote, unless it's invalid
+            // If vote returns false... return 4 => error: kicks you out of the entire program, program stops (not break)!
             if (!vote(i, j, name))
             {
                 printf("Invalid vote.\n");
