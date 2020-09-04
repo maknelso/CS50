@@ -129,12 +129,15 @@ int main(int argc, string argv[])
         tabulate();
 
         // Check if election has been won
+        // print_winnter returns bool
         bool won = print_winner();
+        // if (won) means if won == true or if print_winnter == true (over 50% of voter_count)
         if (won)
         {
             break;
         }
 
+        // If no winners (above), eliminate last-place candidates
         // Eliminate last-place candidates
         int min = find_min();
         bool tie = is_tie(min);
@@ -142,6 +145,7 @@ int main(int argc, string argv[])
         // If tie, everyone wins
         if (tie)
         {
+            // if tie == true, print out all candidate names who are not eliminated
             for (int i = 0; i < candidate_count; i++)
             {
                 if (!candidates[i].eliminated)
@@ -155,6 +159,7 @@ int main(int argc, string argv[])
         // Eliminate anyone with minimum number of votes
         eliminate(min);
 
+        // Each round, after tabulate fx, after checking for winners (if no winners), after checking for ties (if no tie), reset all votes
         // Reset vote counts back to zero
         for (int i = 0; i < candidate_count; i++)
         {
