@@ -1,0 +1,8 @@
+If we count in binary, we can only count from 0-255 (256 #s)
+If we count in hexadecimal, we use FF. 0F = 15, 10 = 16 in hexadecimal => prefix with 0x so 0x10 = 16 in hexadecimal
+
+Describe RGB in hexadecimal digitsL 00 00 00 => no red, no green, no blue => absence of color = black
+
+hexadecimal prefix => 0x
+
+
