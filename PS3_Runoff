@@ -32,9 +32,7 @@ bool vote(int voter, int rank, string name)
     }
     return false;
 }
-
------------------------------------
-
+---------------------------------------------------------------------------------------------------------------------
 #include <cs50.h>
 #include <stdio.h>
 #include <string.h> // for strcmp fx
@@ -162,15 +160,14 @@ int main(int argc, string argv[])
     return 0;
 }
 
-// Record preference if vote is valid
-// Not 100% sure of this vote function -> will have to double check after I implement the rest of the functions
-// Try using a inner and outer loop to fill this out
+// Record preference if vote is valid -> not 100% sure
 bool vote(int voter, int rank, string name)
 {
     for (int i = 0, n = candidate_count; i < n; i++)
     {
         if (strcmp(candidates[i].name, name) == 0)
         {
+            // preference[i][j] is the index of the preferred candidate
             preferences[voter][rank] = i;
             return true;
         }
@@ -186,6 +183,8 @@ void tabulate(void)
     {
         for (int j = 0, n = candidate_count; j < n; j++)
         {
+            // preference[i][j] is the index of the preferred candidate
+            // candidates[preference[i][j]] is the actual preferred candidate
             if (candidates[preferences[i][j]].eliminated == false)
             {
                 candidates[preferences[i][j]].votes++;
@@ -254,6 +253,7 @@ void eliminate(int min)
     }
     return;
 }
+
 
 -----------------------------------------------------------------------------------------------------------
 
