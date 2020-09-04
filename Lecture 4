@@ -49,4 +49,33 @@ int main (void)
 }
 
 
+=> essentially, p is another variable that is storing the address of n. Essentially just a pointer to n.
+=> typically, we don't care what address of n is. We just care that we can access it
+=> FYI: most pointers are 64 bit (or long)
+-----------------------
+There are no strings!
+
+string s = "EMMA";
+
+EMMA\0    => addresses of each is back to back (eight 0 bits)
+
+s is a pointer. It stores the first address of 'E' (the beginning).  s is a pointer to Emma's actual name in memory.
+Computer is smart enough to look for null terminating character to know when the "string" ends.
+
+string is char * => it is a variable that contains the address of a char
+
+string s = "EMMA";
+char *s = "EMMA";       => * represents an address, char represents the type of address being pointed at. char * allows you to store the address of or point at a character.
+
+typedef char *string;   => char * means the type of value is going to be an address of a char, name we want to give is string (CS50.h)
+
+
+
+
+
+
+
+
+
+
 
