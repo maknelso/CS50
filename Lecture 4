@@ -5,4 +5,48 @@ Describe RGB in hexadecimal digitsL 00 00 00 => no red, no green, no blue => abs
 
 hexadecimal prefix => 0x
 
+& -> ampersand means get the address of => &n
+* -> means go to that address
+%p -> prints out the address for us
+
+printf("%p\n", &n);
+
+- when you ask computer for address of some value, you are getting a pointer to that value, pointer is an address in that computer's memory.
+- %p (pointer/address of some value)
+- * (is the opposite of the address of operator) -> it says go to a specific address
+
+printf("%i\n", *&n);    // *& undoes it, have to print %i
+
+- we can store addresses and variables themselves:
+- if you want to STORE the address of a value in a variable, you have to specify not just the type of value, but with * operator, that this is a pointer. 
+e.g. int *p = &n;
+
+int *p => means this is a pointer/address to an int
+
+#include <stdio.h>
+
+int main (void)
+{
+    int n = 50;
+    int *p = &n;
+ 
+    printf("%p\n", p);
+}
+
+- Rarely, after today, do we care about the specific addresses where things are
+
+- you store the address of n, in p. P is a pointer/address to an integer. CLANG knows if you're getting the address of something, you must store it in a pointer,
+you cannot just store it as an integer. 
+
+#include <stdio.h>
+
+int main (void)
+{
+    int n = 50;
+    int *p = &n;
+    
+    printf("%i\n", *p);
+}
+
+
 
