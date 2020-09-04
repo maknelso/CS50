@@ -1,3 +1,23 @@
+Notes:
+
+separate functions:
+
+int find_min(void)  -> you have to return an int
+bool print_winner(void) -> you have to return a bool (e.g. return true; return false;)
+
+== means equality
+= means to assign
+
+// if eliminated status is false
+if (candidates[i].eliminated == false) 
+{
+    // assign true to the candidate's eliminated status
+    candidates[i].eliminated = true; 
+}
+
+
+1st time doing it:
+
 #include <cs50.h>
 #include <stdio.h>
 #include <string.h>             //need for strcmp fx
