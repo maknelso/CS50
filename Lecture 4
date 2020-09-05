@@ -69,13 +69,91 @@ char *s = "EMMA";       => * represents an address, char represents the type of 
 
 typedef char *string;   => char * means the type of value is going to be an address of a char, name we want to give is string (CS50.h)
 
+---------------------------
+#include <stdio.h>
 
+int main (void)
+{
+    char *s = "EMMA";
+    printf("%c\n", *s);             // go to the address of s -> s is the first character
+    printf("%c\n", *(s + 1));       // this prints out second character
+}
 
+s[1] => is syntactic sugar it, computer under the hood does (s + 1)
 
+printf - knows to print out every char until it sees null terminator character
 
+------------------------------------
 
+- cannot compare two strings with if (i == j) because we are getting two different locations in memory
+- get_string has been returning a pointer. a pointer to the first address of the first char 
 
+------------------------------------
+50:00 -> both s and t are upper-cased
+#include <cs50.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
 
+int main(void)
+{
+    // example input is emma
+    char *s = get_string("s: ");
 
+    // we are copying s into t (copying the address literally) => s and t are both pointing to the same memory
+    char *t = s;
+
+    // go into the first character in t and uppercase it, so 'e' is now "e"
+    t[0] = toupper(t[0]);
+
+    printf("%s\n", s);
+    printf("%s\n", t);
+}
+
+-----------------------------------------------------------
+only t is uppercased, but not s
+#include <cs50.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>     // for strlen fx
+#include <stdlib.h>
+
+int main(void)
+{
+    // example input is emma
+    // get_string just returns the address of the string from human
+    char *s = get_string("s: ");
+
+    // memory allocate: however many bytes the human input s is + 1 for null terminating character
+    // strlen is pronounced string length
+    // malloc returns the address of the first byte of that memory as well (hand me back a pointer) -> store in t
+    char *t = malloc(strlen(s) + 1);
+    
+    // copy INTO t, the CONTENTS of s (i.e. copy FROM s to T)
+    // prnounced string copy
+    strcpy(t, s);
+    
+    // do not actually need this -> use strcpy()
+    //iterate THROUGH (not just up to) the length because we want to copy the null terminating character as well
+    // doing the copying
+    //for (int i = 0, n = strlen(s); i < n + 1; i++)
+    //{
+    //    t[i] = s[i];
+    //}
+    
+    t[0] = toupper(t[0]);
+    
+    printf("%s\n", s);
+    printf("%s\n", t);
+    
+    // free the address of the chunk of memory that malloc returned to me
+    free(t);
+}
+
+BREAK --------------------58:45 ---------------- BREAK
+
+valgrind ./copy
+help50 valgrind ./copy
 
 
