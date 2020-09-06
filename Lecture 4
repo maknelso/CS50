@@ -1,3 +1,9 @@
+& -> ampersand means get the address of => &n
+* -> means go to that address
+%p -> prints out the address for us
+
+-------------------------------------------
+
 If we count in binary, we can only count from 0-255 (256 #s)
 If we count in hexadecimal, we use FF. 0F = 15, 10 = 16 in hexadecimal => prefix with 0x so 0x10 = 16 in hexadecimal
 
@@ -155,5 +161,131 @@ BREAK --------------------58:45 ---------------- BREAK
 
 valgrind ./copy
 help50 valgrind ./copy
+
+if you go over the array (buffer), it is a buffer overflow.
+
+e.g. 
+void f(void)
+{
+    // alloc enough memory for 10 int, and store the address of that chunk of memory in a pointer called x. sizeof() tells you int is 4 byte, char is 1 byte
+    int *x = malloc(10 * sizeof(int));   
+    // overflowing a buffer -> arrays are 0 indexed
+    // valgrind will say Invalid write of size 4 (memory.c:8) -> line 8
+    x[10] = 0;
+    free(x);
+}
+
+---------------------------------
+1:11:20 - noswap.c does not work
+
+*When you pass inputs to a function, you are effectively passing COPIES of your own values to that function
+// Fails to swap two integers
+#include <stdio.h>
+void swap(int a, int b);
+int main(void)
+{
+    int x = 1;
+    int y = 2;
+    printf("x is %i, y is %i\n", x, y);
+    swap (x, y);
+    printf("x is %i, y is %i\n", x, y);
+}
+void swap (int a, int b)
+{
+    int tmp = a;
+    a = b;
+    b = tmp;
+}
+
+swap function is not getting ACTUAL x and y. They are getting COPIES of x and y. swap fx swaps a and b, but not x and y because a and b are COPIES.
+
+------------------------------
+
+---machine code--- (0s and 1s (compiled) program that CLANG compiled for you - into RAM)
+---globals---      (global variables)
+---heap---         (big chunk of memory where you can allocate memory from, e.g. malloc()). heap goes downwards
+
+
+
+---stack---         (when you call a function, that function's local variable and local arguments end up a the botto mof the memory - called stack)
+
+
+----------------------------------
+e.g.
+
+---swap---  (a, b (inputs), tmp (arguments) - functions are above main) -> initialize a and b to 1 and 2 (idential to x and y) but only COPIES
+---main---  (stack frame - stores number of bytes that store maybe argv, argc, x, y (local variables). variables in main
+
+
+when swap is done, the top "tray" is taken away. Memory technically doesn't go anywhere, just no longer allocated for own program.
+main is intact.
+
+------------------------------------
+Cannot pass by copies, need to pass by REFERENCE (pointers).
+
+Why don't we tell swap fx the ADDRESS OF x and ADDRESS OF y?
+
+
+
+---swap--- (pass by reference: have a POINT TO (not equal) x and b POINT TO y, and tmp)
+---main--- (stack frame - 1 and 2 for x and y)
+
+int tmp = *a;
+*a = *b;
+*b = tmp;
+
+---------------------------
+1:22:20 swap.c
+
+// swaps two integers using pointers
+
+#include <stdio.h>
+
+void swap(int *a, int *b);
+
+int main(void)
+{
+    int x = 1;
+    int y = 2;
+
+    printf("x is %i, y is %i\n", x, y);
+    swap(&x, &y);                           //& - pass ADDRESS OF x and ADDRESS OF y
+    printf("x is %i, y is %i\n", x, y);
+}
+
+void swap(int *a, int *b)           //type of pointer - int *a means accept the address of an int and call it a (pointer to an int)
+{
+    int tmp = *a;                   //* means go to that address -> *a means follow the arrow to whatever a is pointing at -> points to x (value is 1)
+    *a = *b;                        //* means go to the address -> *b means follow arrow, which leads you to y, and gets you value of 2. Go to address in a and put whatever was address in b to a
+    *b = tmp;                       //tmp which is value 1, and put it at address in b
+} 
+
+--------------------------------
+1:27:05 
+- a function that keeps calling itself again and again... never ending... leads to stack overflow
+- malloc again and again... will lead to heap overflow (over write memory that's being used by function)
+- stack and heap overflows are generally called buffer overflows
+
+1:27:50
+get_char, get_double, get_float, get_int, get_long, get_string are actually pointers from CS50 library
+
+Lets remove the training wheels of #include <cs50.h>
+
+#include <stdio.h>
+int main(void)
+{
+    int x;
+    printf("x: ");
+    scanf("%i", &x);        //scan from user's keyboard, and you specify the address of memory that you want to put user's input in
+    printf("x: %i\n", x);                  
+}
+
+// pass the address of x to scanf. scanf gives human a blinking prompt. The int will be stored at that address &x for you. 
+// we need to pass scanf the address of x is because if you want to use a function, and you want to change the value of variable, you must pass by reference
+// for changes to persist, you must pass address of x, so that the function can be used 
+// no error checking in scanf though, unfortunately. If human enters in "EMMA" instead of an int, the program may crash.
+
+
+
 
 
