@@ -285,7 +285,92 @@ int main(void)
 // for changes to persist, you must pass address of x, so that the function can be used 
 // no error checking in scanf though, unfortunately. If human enters in "EMMA" instead of an int, the program may crash.
 
+------------------------------------------------------------
+1:30:30 - slightly confusing    scanf.c
 
+#include <stdio.h>
+int main(void)
+{
+    char s[5];              // if we know in advance, user will type in EMMA
+    printf("s: "); 
+    scanf("%s", s);         // read from user's keyboard and the address of a place to put it. don't need &, char * by definition is already a pointer
+                            // CLANG will treat the name of an array just like a pointer, if you use it in scanf
+    printf("s: %s\n", s);   // print out what human typed in
 
+}
 
+input: EMMA
+output: EMMA
+
+//there is a relationship between array and pointer
+//an array is a chunk of memory back to back to back
+//a string is just a sequence of characters back to back to back
+//a string is technically an address of the first byte of that memory
+//by transitivity -> a pointer can be viewed as same thing as an array at least in this context
+//clang will treat the name of an array like a pointer if you use it to scanf, passing in the address of the first byte in that array
+
+-----------------------------------------------
+1:35:35 phonebook.c
+
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+int main(void)
+{
+    // data type is named FILE
+    // give me a pointer to a FILE data type, named file
+    // fopen takes in 2 arg (first: name of the file you want to open, second: r, w, a = read, write, append - adding)
+    // fopen will return a POINTER to file
+    FILE *file = fopen("phonebook.csv", "a");
+
+    // Get strings from user
+    char *name = get_string("Name: ");
+    char *number = get_string("Number: ");
+
+    // Print (write) strings to file
+    // fprintf - file printf -> print to a file
+    // print to the file, name and number (inputs from user above)
+    fprintf(file, "%s, %s\n", name, number);
+
+    // Close file
+    fclose(file);
+}
+
+-------------------------------------
+1:40:10 jpeg.c -> purpose is to check if a file passed by its name at the command line is a JPEG or not
+
+#include <stdio.h>
+
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        return 1;
+    }
+
+    // Open the file that the human typed in at the prompt - and read it
+    FILE *file = fopen(argv[1], "r");
+
+    // If fopen, malloc, get_string returns error conditions, they return NULL
+    if (file == NULL)
+    {
+        return 1;
+    }
+
+    //Read 3 bytes (24 bits) from file
+    // Give myself an array of 3 bytes  -> arcane (mysterious) reason you need to call it unsigned char (number from 0 to 255 instead of - 128 to positive 127)
+    unsigned char bytes[3];
+    // arguments: the array, number of bytes I want to read, how many times I want to read those bytes, file from which I want to read thsoe bytes
+    fread(bytes, 3, 1, file);
+
+    // Check if bytes are 0xff 0xd8 0xff
+    if (bytes[0] == 0xff && bytes[1] == 0xd8 && bytes[2] == 0xff)
+    {
+        printf("Maybe\n");
+    }
+    else
+    {
+        printf("No\n");
+    }
+}
 
