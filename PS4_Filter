@@ -1,3 +1,177 @@
+2nd time doing it -> skipped blur solution (for now)
+
+#include "helpers.h"
+#include <math.h> // for round fx
+
+// Convert image to grayscale
+void grayscale(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Go through the image one ROW at a time
+    for (int i = 0; i < height; i++)
+    {
+        // Go through each pixel within the row, one pixel at a time
+        for (int j = 0; j < width; j++)
+        {
+            // Calculate the average of rgbtRed, rgbtGreen, rgbtGreen color
+            int rgbtAverage = round(((image[i][j].rgbtRed + image[i][j].rgbtGreen + image[i][j].rgbtBlue) / 3.00));
+
+            // Convert each pixel using rgbtAverage
+            image[i][j].rgbtRed = rgbtAverage;
+            image[i][j].rgbtGreen = rgbtAverage;
+            image[i][j].rgbtBlue = rgbtAverage;
+        }
+    }
+    return;
+}
+
+// Convert image to sepia
+void sepia(int height, int width, RGBTRIPLE image[height][width])
+{
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            // Calculate sepiaRed, sepiaGreen, sepiaBlue
+            int sepiaRed = round(0.393 * image[i][j].rgbtRed + 0.769 * image[i][j].rgbtGreen + 0.189 * image[i][j].rgbtBlue);
+            int sepiaGreen = round(0.349 * image[i][j].rgbtRed + 0.686 * image[i][j].rgbtGreen + 0.168 * image[i][j].rgbtBlue);
+            int sepiaBlue = round(0.272 * image[i][j].rgbtRed + 0.534 * image[i][j].rgbtGreen + 0.131 * image[i][j].rgbtBlue);
+
+            if (sepiaRed > 255)
+            {
+                sepiaRed = 255;
+            }
+            if (sepiaGreen > 255)
+            {
+                sepiaGreen = 255;
+            }
+            if(sepiaBlue > 255)
+            {
+                sepiaBlue = 255;
+            }
+
+            image[i][j].rgbtRed = sepiaRed;
+            image[i][j].rgbtGreen = sepiaGreen;
+            image[i][j].rgbtBlue = sepiaBlue;
+        }
+    }
+    return;
+}
+
+// Reflect image horizontally
+void reflect(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Initialization of temporary variable to store LHS
+    RGBTRIPLE LHS_TEMP;
+
+    // width is an integer number (not 0 indexed) - e.g. 4
+    // in the 2D array though, it is represented by: 0, 1, 2, 3
+    if (width % 2 == 0)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            // e.g. let w be 4 => w = width / 2 => 4 / 2 = 2. We have j < w or j < 2 which means stop after w reaches 1, because 1 < 2.
+            for (int j = 0, w = (width / 2); j < w; j++)
+            {
+                // Store LHS pixels to LHS_TEMP
+                LHS_TEMP = image[i][j];
+
+                // Store RHS pixels and store in LHS
+                // width - 1 => e.g. 4 - 1 = 3 (the last pixel of the row)
+                image[i][j] = image[i][width - 1 - j];
+
+                // Store LHS_TEMP (LHS pixels) to RHS
+                image[i][width - 1 - j] = LHS_TEMP;
+            }
+        }
+    }
+
+    else
+    {
+        // else: width is odd, e.g. 3
+        // in 2D array, represented by: 0, 1, 2
+        for (int i = 0; i < height; i++)
+        {
+            // round function: if the decimal is between 0.1 - 0.5, it will round down.
+            // e.g. let width be 3 => w = width / 2 => width / 2 = 1.5 => round(1.5) = 1
+            // j < w or j < 1 which means stop after w reaches 0, because 0 < 1.
+            for (int j = 0, w = round(width / 2); j < w; j++)
+            {
+                LHS_TEMP = image[i][j];
+                image[i][j] = image[i][width - 1 - j];
+                image[i][width - 1 - j] = LHS_TEMP;
+            }
+        }
+    }
+    return;
+}
+
+// Blur image   -> not 100% sure (need to check)
+void blur(int height, int width, RGBTRIPLE image[height][width])
+{
+    int sumBlue;
+    int sumGreen;
+    int sumRed;
+    float counter;
+
+    // create a temporary table of colors to not alter the calculations
+    RGBTRIPLE temp[height][width];
+
+    // this part is complicated
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            sumBlue = 0;
+            sumGreen = 0;
+            sumRed = 0;
+            counter = 0.00;
+
+            // sums values of the pixel and 8 neighboring ones, skips iteration if it goes outside the pic
+            for (int k = -1; k < 2; k++)
+            {
+                if (i + k < 0 || i + k > height - 1)
+                {
+                    continue;
+                }
+
+                for (int h = -1; h < 2; h++)
+                {
+                    if (j + h < 0 || j + h > width - 1)
+                    {
+                        continue;
+                    }
+
+                    sumBlue += image[i + k][j + h].rgbtBlue;
+                    sumGreen += image[i + k][j + h].rgbtGreen;
+                    sumRed += image[i + k][j + h].rgbtRed;
+                    counter++;
+                }
+            }
+
+            // averages the sum to make picture look blurrier -> this seems to make sense
+            //store in the temp array -> sum of the Blue / number of pixels
+            temp[i][j].rgbtBlue = round(sumBlue / counter);
+            temp[i][j].rgbtGreen = round(sumGreen / counter);
+            temp[i][j].rgbtRed = round(sumRed / counter);
+        }
+    }
+
+    //copies values from temporary table -> this part makes sense.
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            image[i][j].rgbtBlue = temp[i][j].rgbtBlue;
+            image[i][j].rgbtGreen = temp[i][j].rgbtGreen;
+            image[i][j].rgbtRed = temp[i][j].rgbtRed;
+        }
+    }
+    return;
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------
+1st time doing it
+
 // Another blur solution - not sure if it's worth spending the time breaking this algo for blur down. Skip it for now.
 
 void blur(int height, int width, RGBTRIPLE image[height][width])
