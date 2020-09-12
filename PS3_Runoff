@@ -177,6 +177,8 @@ bool vote(int voter, int rank, string name)
         if (strcmp(candidates[i].name, name) == 0)
         {
             // preference[i][j] is the index of the preferred candidate
+            // preferences[0][0] = 0; This is saying first voter's first choice is the candidate indexed in candidate[0] position.
+            // i goes into [rank]
             preferences[voter][rank] = i;
             return true;
         }
