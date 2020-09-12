@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
     {
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
-            // This has to be before counter == 0 => not sure why
+            // *This has to be before counter == 0 because otherwise, it will say counter == 0 then counter++, it will be counter > 0 so both will run
             if (counter > 0)
             {
                 // Close the previously opened file
