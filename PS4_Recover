@@ -1,3 +1,91 @@
+3rd time doing it: Not sure why if (counter > 0) has to come before if (counter == 0)
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <cs50.h>
+
+// Global variable that should not be changed - we want to set 512 bytes
+const int BLOCK = 512;
+
+// Give myself a new data type called BYTE so I can use later down below
+typedef uint8_t BYTE;
+
+int main(int argc, char *argv[])
+{
+    if (argc != 2)
+    {
+        printf("Usage: ./recover image\n");
+        return 1;
+    }
+
+    // Open memory card - card.raw
+    FILE *file = fopen (argv[1], "r");
+    if (file == NULL)
+    {
+        return 1;
+    }
+
+    // Give myself a buffer/an array of bytes
+    BYTE buffer[BLOCK];
+    // **IMPORTANT: Have to declare variable "img" as a pointer to... NULL for now.
+    FILE *img;
+    // **IMPORTANT: Allocate memory for name of JPEG "000.jpg\0"
+    char filename[8];
+    // Initialize counter
+    int counter = 0;
+
+    // If fread can read the entire block, it will return to you "number" or 1
+    while (fread(buffer, sizeof(buffer), 1, file) == 1)
+    {
+        if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
+        {
+            // This has to be before counter == 0 => not sure why
+            if (counter > 0)
+            {
+                // Close the previously opened file
+                fclose(img);
+
+                sprintf(filename, "%03i.jpg", counter);
+                counter++;
+
+                img = fopen(filename, "w");
+
+                fwrite(buffer, sizeof(buffer), 1, img);
+            }
+
+            // if first file -> don't need to close file
+            if (counter == 0)
+            {
+                // Making a new JPEG sprintf -> print to a string
+                sprintf(filename, "%03i.jpg", counter);
+                counter++;
+
+                // Open to a new file - store contents of filename in a pointer named img
+                img = fopen(filename, "w");
+
+                // Write data to a file - write to a pointer named img
+                fwrite(buffer, sizeof(buffer), 1, img);
+            }
+
+        }
+        // else if - after reading 512 bytes, there is no new JPEG header found, continue writing another 512 bytes
+        else if (counter > 0)
+        {
+            fwrite(buffer, sizeof(buffer), 1, img);
+        }
+    }
+
+    // If fread no longer turns 1, then it is the end of the file: close img (pointer to a FILE) and close file (pointer to card.raw)
+    fclose(img);
+    fclose(file);
+
+    return 0;
+}
+
+
+--------------------------------------------------------------------------------------------------------------------------------
+
 //2nd time doing it
 
 #include <stdio.h>
