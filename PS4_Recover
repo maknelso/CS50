@@ -1,8 +1,8 @@
 3rd time doing it: Not sure why if (counter > 0) has to come before if (counter == 0)
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
+#include <stdlib.h> // for free() fx
+#include <stdint.h> // for typedef
 #include <cs50.h>
 
 // Global variable that should not be changed - we want to set 512 bytes
