@@ -1,4 +1,4 @@
-3rd time doing it: Not sure why if (counter > 0) has to come before if (counter == 0)
+3rd time doing it:
 
 #include <stdio.h>
 #include <stdlib.h> // for free() fx
