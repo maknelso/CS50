@@ -32,13 +32,16 @@ int main(int argc, char *argv[])
     // **IMPORTANT: Have to declare variable "img" as a pointer to... NULL for now.
     FILE *img = NULL;
     // **IMPORTANT: Allocate memory for name of JPEG "000.jpg\0"
+    // Make sure filename has enough memory to fully represent this entire file name
     char filename[8];
-    // Initialize counter
+    // Initialize counter to keep track of how many JPEGs you found so far
     int counter = 0;
 
     // If fread can read the entire block, it will return to you "number" or 1
+    // fread - buffer, size (# of bytes), number (elements to read), inptr (file - card.raw)
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
     {
+        // Read the file into some buffer (an array of 512 bytes), buffer[0] is the first BYTE in the buffer
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
             // *This has to be before counter == 0 because otherwise, it will say counter == 0 then counter++, it will be counter > 0 so both will run
@@ -47,11 +50,20 @@ int main(int argc, char *argv[])
                 // Close the previously opened file
                 fclose(img);
 
+                // Print to a string: 1st parameter (name of the string you want to write to - filename)
+                // 2nd is format string (print an int with 3 digits to represent it)
+                // 3rd is the number you want to substitute
                 sprintf(filename, "%03i.jpg", counter);
                 counter++;
 
+                // Open a new file 
+                // 1st argument: name of the file you want to open (filename above that you just printed to)
+                // "w" is for write
                 img = fopen(filename, "w");
 
+                // Write to a file (inverse of fread - which is fwrite)
+                // 1st parameter - pointer to bytes that will be written to file
+                // 4th paramter - outptr: the file pointer that you want to write to. img is a pointer to a type FILE - the FILE you just fopened above
                 fwrite(buffer, sizeof(buffer), 1, img);
             }
 
