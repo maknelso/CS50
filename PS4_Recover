@@ -85,7 +85,8 @@ int main(int argc, char *argv[])
             }
 
         }
-        // else if - after reading 512 bytes, there is no new JPEG header found, continue writing another 512 bytes
+        // else if - after reading 512 bytes, there is no new JPEG header found, continue writing another 512 bytes.
+        // else if () - this requires a condition becasue there is an "if" in front of it
         else if (counter > 0)
         {
             fwrite(buffer, sizeof(buffer), 1, img);
