@@ -64,7 +64,11 @@ int main(int argc, char *argv[])
                 // "w" is for write
                 // img is a pointer (type FILE) to filename above
                 // Check for NULL
-                img = fopen(filename, "w");
+                img = fopen(filename, "w")
+                if (img == NULL)
+                {
+                    return 1;
+                }
 
                 // 4) Write data to the file named img (above) (inverse of fread - is fwrite)
                 // 1st parameter - pointer to bytes that will be written to file
@@ -82,6 +86,10 @@ int main(int argc, char *argv[])
 
                 // 2) Open a new file - store contents of filename to a pointer named img
                 img = fopen(filename, "w");
+                if (img == NULL)
+                {
+                    return 1;
+                }
 
                 // 3) Write data to the file to img
                 fwrite(buffer, sizeof(buffer), 1, img);
