@@ -18,9 +18,7 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Open memory card first 
-    
-    - card.raw
+    // Open memory card first - card.raw
     FILE *file = fopen (argv[1], "r");
     if (file == NULL)
     {
@@ -37,31 +35,36 @@ int main(int argc, char *argv[])
     // Initialize counter to keep track of how many JPEGs you found so far
     int counter = 0;
 
-    // If fread can read the entire block, it will return to you "number" or 1
-    // fread - buffer, size (# of bytes), number (elements to read), inptr (file - card.raw)
+    // If fread can read the entire block, it will return to you "number" or 1. Read memory card
+    // fread - 4 parameters:
+    // 1st parameter - buffer to store data
+    // 2nd parameter - size (# of bytes)
+    // 3rd parameter - number (elements to read)
+    // 4th parameter - inptr (file - card.raw)
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
     {
-        // Read the file into some buffer (an array of 512 bytes), buffer[0] is the first BYTE in the buffer
+        // Read the file into some buffer (an array of 512 bytes), buffer[0] is the 1st BYTE in the buffer, buffer[1] is the 2nd BYTE
         if (buffer[0] == 0xff && buffer[1] == 0xd8 && buffer[2] == 0xff && (buffer[3] & 0xf0) == 0xe0)
         {
             // *This has to be before counter == 0 because otherwise, it will say counter == 0 then counter++, it will be counter > 0 so both will run
             if (counter > 0)
             {
-                // Close the previously opened file
+                // 1) Close the previously opened file
                 fclose(img);
 
-                // Print to a string: 1st parameter (name of the string you want to write to - filename)
+                // 2) Print to a string: 1st parameter (name of the string you want to write to - filename)
                 // 2nd is format string (print an int with 3 digits to represent it)
                 // 3rd is the number you want to substitute
                 sprintf(filename, "%03i.jpg", counter);
                 counter++;
 
-                // Open a new file 
+                // 3) Open a new file 
                 // 1st argument: name of the file you want to open (filename above that you just printed to)
                 // "w" is for write
+                // img is a pointer (type FILE) to filename above
                 img = fopen(filename, "w");
 
-                // Write to a file (inverse of fread - which is fwrite)
+                // 4) Write data to the file named img (above) (inverse of fread - is fwrite)
                 // 1st parameter - pointer to bytes that will be written to file
                 // 4th paramter - outptr: the file pointer that you want to write to. img is a pointer to a type FILE - the FILE you just fopened above
                 fwrite(buffer, sizeof(buffer), 1, img);
@@ -70,14 +73,14 @@ int main(int argc, char *argv[])
             // if first file -> don't need to close file
             if (counter == 0)
             {
-                // Making a new JPEG sprintf -> print to a string
+                // 1) Print to the string:
                 sprintf(filename, "%03i.jpg", counter);
                 counter++;
 
-                // Open to a new file - store contents of filename in a pointer named img
+                // 2) Open a new file - store contents of filename to a pointer named img
                 img = fopen(filename, "w");
 
-                // Write data to a file - write to a pointer named img
+                // 3) Write data to the file to img
                 fwrite(buffer, sizeof(buffer), 1, img);
             }
 
@@ -89,8 +92,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    // If fread no longer turns 1, then it is the end of the file: close img (pointer to a FILE) and close file (pointer to card.raw)
+    // If fread no longer turns 1, then it is the end of the file
+    
+    // Close img (pointer to a FILE) - newest file that you just opened
     fclose(img);
+    // Close memory card (card.raw)
     fclose(file);
 
     return 0;
