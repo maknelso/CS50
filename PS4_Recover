@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     // 2nd parameter - size (# of bytes)
     // 3rd parameter - number (elements to read)
     // 4th parameter - inptr (file - card.raw)
+    // Read from the file pointed to and STORES THEM in memory in a buffer (usually array)
     while (fread(buffer, sizeof(buffer), 1, file) == 1)
     {
         // Read the file into some buffer (an array of 512 bytes), buffer[0] is the 1st BYTE in the buffer, buffer[1] is the 2nd BYTE
@@ -62,11 +63,13 @@ int main(int argc, char *argv[])
                 // 1st argument: name of the file you want to open (filename above that you just printed to)
                 // "w" is for write
                 // img is a pointer (type FILE) to filename above
+                // Check for NULL
                 img = fopen(filename, "w");
 
                 // 4) Write data to the file named img (above) (inverse of fread - is fwrite)
                 // 1st parameter - pointer to bytes that will be written to file
                 // 4th paramter - outptr: the file pointer that you want to write to. img is a pointer to a type FILE - the FILE you just fopened above
+                // Write to file pointed to (img) by READING THEM from buffer (usually array)
                 fwrite(buffer, sizeof(buffer), 1, img);
             }
 
