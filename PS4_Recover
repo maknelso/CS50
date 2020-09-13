@@ -18,7 +18,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // Open memory card - card.raw
+    // Open memory card first 
+    
+    - card.raw
     FILE *file = fopen (argv[1], "r");
     if (file == NULL)
     {
@@ -28,7 +30,7 @@ int main(int argc, char *argv[])
     // Give myself a buffer/an array of bytes
     BYTE buffer[BLOCK];
     // **IMPORTANT: Have to declare variable "img" as a pointer to... NULL for now.
-    FILE *img;
+    FILE *img = NULL;
     // **IMPORTANT: Allocate memory for name of JPEG "000.jpg\0"
     char filename[8];
     // Initialize counter
