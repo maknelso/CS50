@@ -1,4 +1,176 @@
-// IMPLEMENTS a dictionary's functionality
+2nd time doing it
+
+// Implements a dictionary's functionality
+
+#include <stdbool.h>
+#include "dictionary.h" // use declarative files in dictionary.h (header file)
+#include <stdio.h>      // for fopen and fclose fx
+#include <string.h>     // for strcpy
+#include <stdlib.h>     // for malloc
+#include <strings.h>    // for strcasecmp
+#include <ctype.h>      // for tolower fx used in hash fx
+
+// Represents a node in a hash table
+typedef struct node
+{
+    char word[LENGTH + 1];
+    struct node *next;
+}
+node;
+
+// Number of buckets in hash table
+const unsigned int N = 50;
+// Initialize wordcount for size f(x)
+int wordcount = 0;
+// Hash table
+// HT is an array of linked lists. And linked list are nodes linked together.
+node *table[N];
+
+// Returns true if word is in dictionary else false
+bool check(const char *word)
+{
+    // Take the word and has the word to obtain hash value
+    int x = hash(word);
+
+    // Access LL at that index in HT
+    // Traverse LL (one node at a time), and look for the word using strcasecmp
+    // Set up a variable a point to the first element in that LL
+    node *cursor = malloc(sizeof(node));
+    if (cursor != NULL)
+    {
+        // Point cursor to the first element in LL (or what table[x] is pointing at)
+        cursor = table[x];
+
+        // Traverse
+        while (strcasecmp(cursor->word, word) != 0)
+        {
+            cursor = cursor->next;
+            if (cursor->next == NULL)
+            {
+                free(cursor);
+                return false;
+            }
+        }
+    }
+    free(cursor);
+    return true;
+}
+
+// Hashes word to a number
+// source: djib2 by Dan Bernstein (http://www.cse.yorku.ca/~oz/hash.html)
+unsigned int hash(const char *word)
+{
+    unsigned long hash = 5381;
+    int c = *word;
+    c = tolower(c);
+
+    while (*word != 0)
+    {
+
+        hash = ((hash << 5) + hash) + c;
+        c = *word++;
+        c = tolower(c);
+    }
+    return hash % N;
+}
+
+// Loads dictionary into memory, returning true if successful else false
+bool load(const char *dictionary)
+{
+    // Open dictionary file
+    FILE *file = fopen(dictionary, "r");
+    if (file == NULL)
+    {
+        return 1;
+    }
+
+    // **Declare and allocate memory for word
+    // No word wil lbe longer than LENGTH - a const defined in dictionary.h
+    char word[LENGTH + 1];
+
+    // Read strings from file (file is a pointer to dictionary)
+    while (fscanf(file, "%s\n", word) != EOF)
+    {
+        // Create a new (temporary) node - to store that particular word (from file or pointer to dictionary) inside the HT
+        node *n = malloc(sizeof(node));
+        // If no errors:
+        if (n != NULL)
+        {
+            // Copy word from dictionary into node: copy word into character array n-> word, which is the word field of this node (copy into the temporary node just malloc-ed)
+            // strcpy(destination, source);
+            strcpy(n->word, word);
+            wordcount++;
+        }
+
+        // Insert node into HT
+        // Use hash function first to determine which LL to insert the word into (e.g. 0 - 25)
+        int x = hash(word);
+        // Insert word into the LL - add new node to BEGINNING of LL and set the pointers in the correct order
+        // Insert node into hashtable (named table):
+        // if head of the table array is empty
+        if (table[x] == NULL)
+        {
+            // Make n (the malloc-ed pointer) the head of the linked list: have head of the LL point to the node
+            table[x] = n;
+            n->next = NULL;
+        }
+        else
+        {
+            // else: initialize n node to point to what the head of the node is pointing to
+            n->next = table[x];
+            // Then head of the node should point to n -> my Github solution says something differently (not sure if correct)
+            table[x] = n;
+        }
+    }
+    fclose(file);
+    return true;
+}
+
+// Returns number of words in dictionary if loaded else 0 if not yet loaded
+unsigned int size(void)
+{
+    return wordcount;
+}
+
+// Unloads dictionary from memory, returning true if successful else false
+bool unload(void)
+{
+    // Free each of the nodes in LL
+    // Iterate over HT, go over each one of the individual LL and call free on all of the nodes inside L
+    for (int i = 0, n = (N - 1); i < n; i++)
+    {
+        // Inside table[i]
+        node *cursor = malloc(sizeof(node));
+        if (cursor != NULL)
+        {
+            // Set cursor to point to what table[i] is pointing to
+            cursor = table[i];
+        }
+        // Create another pointer to a node named tmp
+        node *tmp = malloc(sizeof(node));
+        if (tmp != NULL)
+        {
+            // Set tmp to point to what cursor is pointing to
+            tmp = cursor;
+        }
+        // while it is not the end of the L
+        while(cursor->next != NULL)
+        {
+            // Free tmp
+            free(tmp);
+            // Move the cursor to the next node
+            cursor = cursor->next;
+            // Set tmp to point to where the moved cursor is pointing to
+            tmp = cursor;
+        }
+    }
+    return true;
+}
+
+
+--------------------------------------------------------------------------------------------------------
+
+1st time doing it -- // IMPLEMENTS a dictionary's functionality
 
 #include <stdbool.h>
 #include <string.h>             // for strcpy
