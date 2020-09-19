@@ -1,13 +1,11 @@
 Version 3 - works except there are memory leaks
 // Implements a dictionary's functionality
-
 #include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-
 #include "dictionary.h"
 
 #define HASHTABLE_SIZE 10000
@@ -20,7 +18,13 @@ typedef struct node
 }
 node;
 
-node *hashtable[HASHTABLE_SIZE];
+// Number of buckets in hash table
+const unsigned int N = 50;
+// Initialize wordcount for size f(x)
+int wordcount = 0;
+// Hash table
+// HT is an array of linked lists. And linked list are nodes linked together.
+node *table[N];
 
 // Hashes the word (hash function posted on reddit by delipity)
 // The word you want to hash is contained within new node, arrow, word.
@@ -32,7 +36,7 @@ int hash_index(char *hash_this)
     {
         hash = (hash << 2) ^ hash_this[i];
     }
-    return hash % HASHTABLE_SIZE;
+    return hash % N;
 }
 
 // Initializes counter for words in dictionary
@@ -66,18 +70,18 @@ bool load(const char *dictionary)
         int h = hash_index(new_node->word);
 
         // Initializes head to point to hashtable index/bucket
-        node *head = hashtable[h];
+        node *head = table[h];
 
         // Inserts new nodes at beginning of lists
         if (head == NULL)
         {
-            hashtable[h] = new_node;
+            table[h] = new_node;
             word_count++;
         }
         else
         {
-            new_node->next = hashtable[h];
-            hashtable[h] = new_node;
+            new_node->next = table[h];
+            table[h] = new_node;
             word_count++;
         }
     }
@@ -100,7 +104,7 @@ bool check(const char *word)
     // Initializes index for hashed word
     int h = hash_index(word_copy);
     // Sets cursor to point to same address as hashtable index/bucket
-    node *cursor = hashtable[h];
+    node *cursor = table[h];
     // Sets cursor to point to same location as head
 
     // If the word exists, you should be able to find in dictionary data structure.
