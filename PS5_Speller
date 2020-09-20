@@ -132,6 +132,7 @@ bool unload(void)
         node *tmp = head;
 
         // Has to be cursor!= NULL, not cursor->next != NULL
+        // If you did cursor->next != NULL, then you are not freeing the last node
         while(cursor != NULL)
         {
             // Mover cursor to the next node
