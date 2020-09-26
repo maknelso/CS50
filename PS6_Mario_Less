@@ -1,0 +1,17 @@
+from cs50 import get_int
+
+# no do-while loop in Py, have to create an infinite loop, then break out of it
+# get_int only makes sures the user types in an integer
+
+# have to make py keep asking for get_int if h <= 0 or h >= 8
+h = get_int("Height: ")
+while (h <= 0 or h >= 8):
+    h = get_int("Height: ")
+
+for i in range(h):
+    for j in range(h):
+        if (i + j < h - 1):
+            print(" ", end="")
+        else:
+            print("#", end="")
+    print()
