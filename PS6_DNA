@@ -1,0 +1,57 @@
+#WIP
+
+import csv
+from sys import argv, exit
+
+# example: $ python dna.py databases/large.csv sequences/5.txt
+
+def main()
+    if len(argv) != 3:
+    print("incorrect number of command-line arguments")
+    exit(1)
+
+
+
+
+
+
+def max_num_substring(s, sub):
+    # Calculate max. number of times a substring is repeated
+    #s:   [ATATAT]
+    # create an array named answer
+    # answer stores the number of how many times it repeats - substring sub repeat in s
+    #ans: [302010] #look at previous, and increment it by 1
+    #sub: AT
+
+    ans = [0] * len(s)
+    # start at the end
+    # for(int i = strlen(s) - strlen(sub); i > - 1; i--)
+    for i in range(len(s) - len(sub), -1, -1)
+        # starting at i, ending at i + len(sub)
+        if s[i: i + len(sub)] == sub:
+            # is it base case (len(s) - 1 is end of index?)
+            if i + len(sub) > len(s) - 1:
+                ans[i] = 1
+            else:
+                ans[i] = ans[i + len(sub)]
+
+    return max(ans)
+
+
+
+# Open CSV and read its content into memory - assume first argument is csv
+# Using with open function to close the file for us:
+with open(argv[1], "r") as csv_file:
+    reader = csv.reader(csv_file)
+    for row in reader:
+        print(row)
+
+    # all_sequences will have the header
+    all_sequences = next(reader)[1:]
+
+# Open DNA and read its content into memory - assume second argument is valid text file
+    with open(argv[2], "r") as dna_file:
+        s = dna_file.read()
+        print(s)
+
+        actual = [max_num_substring(s, seq) for seq in all_sequences]
