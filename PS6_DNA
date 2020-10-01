@@ -1,57 +1,65 @@
-#WIP
-
 import csv
 from sys import argv, exit
 
 # example: $ python dna.py databases/large.csv sequences/5.txt
 
-def main()
+def main():
+
+    # Step 0: Check user input is valid
     if len(argv) != 3:
-    print("incorrect number of command-line arguments")
-    exit(1)
+        print("Incorrect number of command-line arguments.")
+        exit(1)
 
+    # Step 1: Opening the files
+    # 1 a) Open CSV and read its content into memory - assume first argument is csv
+    # open the large or small.csv file
+    database = open(argv[1])
+    # read the large or small csv file into variable named data
+    data = csv.DictReader(database)
 
+    # 1 b) Open DNA sequence and read its content into memory - assume second argument is valid text file
+    # open the sequences txt files
+    with open(argv[2], "r") as f:
+        # read and store it in variable called sequence
+        sequence = f.read()
 
+    # Step 2: Computer the STR counts (column titles in data.csv after column "name")
+    # declare a dictionary
+    counts = {}
+    # from 1 on, in csv file
+    for subseq_str in data.fieldnames[1:]:
+        counts[subseq_str] = longest_match(sequence, subseq_str)
 
+    # This part is confusing:
+    # check each row in data (csv file) for a matching profile
+    for row in data:
+        # counts is a dictionary - 8 elements
+        # all the count values are equal to the row values
+        if all(counts[subseq_str] == int(row[subseq_str]) for subseq_str in counts):
+            print(row["name"])
+            database.close()
+            return
+    print("No match")
+    database.close()
 
+# This part is confusing:
+def longest_match(sequence, subseq_str):
+    longest = 0
+    # e.g. length for subseq_str TATC will be 4
+    length = len(subseq_str)
 
-def max_num_substring(s, sub):
-    # Calculate max. number of times a substring is repeated
-    #s:   [ATATAT]
-    # create an array named answer
-    # answer stores the number of how many times it repeats - substring sub repeat in s
-    #ans: [302010] #look at previous, and increment it by 1
-    #sub: AT
-
-    ans = [0] * len(s)
-    # start at the end
-    # for(int i = strlen(s) - strlen(sub); i > - 1; i--)
-    for i in range(len(s) - len(sub), -1, -1)
-        # starting at i, ending at i + len(sub)
-        if s[i: i + len(sub)] == sub:
-            # is it base case (len(s) - 1 is end of index?)
-            if i + len(sub) > len(s) - 1:
-                ans[i] = 1
+    for i in range(len(sequence)):
+        count = 0
+        while True:
+            start = i + length * count # or 0?
+            end = start + length
+            if sequence[start:end] == subseq_str:
+                count += 1
             else:
-                ans[i] = ans[i + len(sub)]
+                break
 
-    return max(ans)
+        # broken out of the loop now
+        longest = max(longest, count)
+    return longest
 
-
-
-# Open CSV and read its content into memory - assume first argument is csv
-# Using with open function to close the file for us:
-with open(argv[1], "r") as csv_file:
-    reader = csv.reader(csv_file)
-    for row in reader:
-        print(row)
-
-    # all_sequences will have the header
-    all_sequences = next(reader)[1:]
-
-# Open DNA and read its content into memory - assume second argument is valid text file
-    with open(argv[2], "r") as dna_file:
-        s = dna_file.read()
-        print(s)
-
-        actual = [max_num_substring(s, seq) for seq in all_sequences]
+main()
