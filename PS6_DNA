@@ -2,6 +2,9 @@ import csv
 from sys import argv, exit
 
 # example: $ python dna.py databases/large.csv sequences/5.txt
+# argv[0] is dna.py
+# argv[1] is databases/large.csv
+# argv[2] is sequences/5.txt
 
 def main():
 
@@ -11,6 +14,7 @@ def main():
         exit(1)
 
     # Step 1: Opening the files
+    
     # 1 a) Open CSV and read its content into memory - assume first argument is csv
     # open the large or small.csv file
     database = open(argv[1])
