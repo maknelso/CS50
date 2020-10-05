@@ -2,23 +2,17 @@ import csv
 from sys import argv, exit
 
 # example: $ python dna.py databases/large.csv sequences/5.txt
-# argv[0] is dna.py
-# argv[1] is databases/large.csv
-# argv[2] is sequences/5.txt
+# 3 arguments, argv[0] = dna.py, argv[1] = databases/large.csv, argv[2] = sequences/5.txt
 
 def main():
-
-    # Step 0: Check user input is valid
     if len(argv) != 3:
-        print("Incorrect number of command-line arguments.")
+        print("Incorrect number of command-line arguments. Usage: python data.csv sequence.txt")
         exit(1)
 
-    # Step 1: Opening the files
-    
-    # 1 a) Open CSV and read its content into memory - assume first argument is csv
-    # open the large or small.csv file
+    # Step 1: Open the files
+    # 1 a) Open CSV and read its content into memory - assume first argument is csv. Database is the DNA database of names and longest STR
     database = open(argv[1])
-    # read the large or small csv file into variable named data
+    # csv.DictReader reads it in like a table and then refer to cells in a row by indexing. Reads into data variable.
     data = csv.DictReader(database)
 
     # 1 b) Open DNA sequence and read its content into memory - assume second argument is valid text file
@@ -27,43 +21,64 @@ def main():
         # read and store it in variable called sequence
         sequence = f.read()
 
-    # Step 2: Computer the STR counts (column titles in data.csv after column "name")
-    # declare a dictionary
+    # Step 2: Compute the longest counts for each STR (column titles in data.csv after the first column "name")
+    # declare a dictionary called "counts"
     counts = {}
-    # from 1 on, in csv file
+
+    # loop through the field name
+    # can call subseq_str anything
+    # from 1 on (i.e. AGATC,TTTTTTCT,AATG,TCTAG,GATA,TATC,GAAA,TCTG)
+    # The fieldnames parameter is a sequence of keys that identify the order in which values in the dictionary passed to the writerow() method are written to the CSV file.
     for subseq_str in data.fieldnames[1:]:
+        # longest_match: scans sequence (variable containing the texts) and figures out the longest
+        # longest_match will execute 8 times.
+        # It will scan through the sequence and it's going to count up the number of subseqent STR in a row, it will remember that # and return it and it will be stored in counts
         counts[subseq_str] = longest_match(sequence, subseq_str)
 
-    # This part is confusing:
-    # check each row in data (csv file) for a matching profile
+    # After we have the 8 values, we will go to DNA database, one row at a time, and figure out from the row array, which person does it match up with
+    # Check each row in data (csv file) for a matching profile
+    # row is a keyword in Python (it looks like )
     for row in data:
         # counts is a dictionary - 8 elements
+        # all is a Python expression
         # all the count values are equal to the row values
+        # if it is equal for all subseq_str in counts
         if all(counts[subseq_str] == int(row[subseq_str]) for subseq_str in counts):
+            # print value in name column
             print(row["name"])
             database.close()
             return
     print("No match")
     database.close()
 
-# This part is confusing:
+# Custom function
+# sequence are the long str text files
+# loop - and count up sequential matches
+# e.g. when we look for "AGATC", we look 5 at a time, if we look for "TTTTTTCT", we look for 8 at a time
 def longest_match(sequence, subseq_str):
     longest = 0
     # e.g. length for subseq_str TATC will be 4
     length = len(subseq_str)
 
+    # test to see if it matches with subseq_str
     for i in range(len(sequence)):
         count = 0
+
+        # while we find matches of subseq
         while True:
-            start = i + length * count # or 0?
+            # if we found subsequent ones, count will be 1, 2, 3, 4...
+            start = i + length * count
+            # end is essentially the subseq_str we want to test
             end = start + length
+            # from start to end, if it's equal to subseq_str
             if sequence[start:end] == subseq_str:
                 count += 1
+            # if we do not find a match, break out of the loop
             else:
                 break
-
         # broken out of the loop now
         longest = max(longest, count)
+
     return longest
 
 main()
