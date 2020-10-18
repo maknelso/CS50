@@ -18,11 +18,11 @@ db = cs50.SQL("sqlite:///students.db")
 
 # Create table called students in database file called students.db
 # Specific columns we want - db.execute("CREATE TABLE students(fName TEXT, mName TEXT, lName TEXT, house TEXT, year TEXT")
-db.execute("CREATE TABLE students (fname TEXT, mName TEXT, lName TEXT, house TEXT, birth TEXT)")
+db.execute("CREATE TABLE students (fName TEXT, mName TEXT, lName TEXT, house TEXT, birth TEXT)")
 
 # Open CSV file
 with open(argv[1], "r") as characters:
-    # Create DictReader
+    # Create DictReader -> DictReader reads from 2nd line (ignore header)
     reader = csv.DictReader(characters, delimiter=',')
 
     for row in reader:
@@ -33,7 +33,7 @@ with open(argv[1], "r") as characters:
         # Use split function on name to split into words
         # example 1: Hannah Abbott      => Hannah, Abbott
         # example 2: Harry James Potter => Harry, James, Potter
-        splitName = name.split(" ")
+        splitName = name.split()
 
         # full name does not have a middle name
         if len(splitName) == 2:
