@@ -1,3 +1,5 @@
+<!--index.html-->
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -69,7 +71,7 @@
 
 
 ===============================================================================================================================
-
+<!--business.html-->
 <!DOCTYPE html>
 
 <html lang="en">
@@ -137,3 +139,57 @@
 
 </html>
 
+======================================================================================================================
+<!--submit_salary.html-->
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>
+            Maple Salary - About
+        </title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <form action="/test.php">
+            <label for="fname">Company:</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Level (for Tech):</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Job Title:</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Overall YOE:</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Year(s) at the company:</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">City</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Province</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Base salary</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Expected Bonus</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">RSU</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Employee Stock Option (FMV benefit)</label><br>
+            <input type="text" value=""><br>
+
+            <label for="lname">Highest Academic Level</label><br>
+            <input type="text" value=""><br>
+
+            <br>
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>
