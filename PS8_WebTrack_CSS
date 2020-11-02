@@ -1,0 +1,23 @@
+/* Standardize pictures */
+.pics {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 250px;
+  height: 250px;
+}
+
+.background {
+  background-color:#fff8dc;
+}
+
+.font_data {
+  font-family:Georgia, serif;
+}
+
+/* Back to homepage link*/
+.backtohome {
+  color: #009ACD;
+  text-decoration: underline;
+}
+
