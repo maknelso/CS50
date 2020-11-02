@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>
+            Maple Salary
+        </title>
+        <!-- JavaScript for the drop down menu -->
+        <script>
+            function goToNewPage()
+            {
+                var url = document.getElementById('list').value;
+                if(url != 'none') {
+                window.location = url;
+                }
+            }
+        </script>
+        <link rel="stylesheet" href="styles.css"/>
+    </head>
+    <body class="background">
+        <!-- MS logo image -->
+        <nav class="navbar navbar-light bg-light">
+            <a class="navbar-brand" href="#">
+                <img src="MS_logo.png" width="30" height="30" alt="" loading="lazy">
+            </a>
+        </nav>
+
+        <h1 style="text-align: center; color:#B22222;">Maple Salary - the website for Canadians on compensation transparency</h1>
+
+        <form>
+            <label>Choose a career field:</label>
+            <select name="compensation" id="list" accesskey="">
+              <option value="business.html">Business job compensation</option>
+              <option value="technology.html">Tech job compensations</option>
+              <option value="others.html">Other job compensations</option>
+            </select>
+            <input type=button value="Go" onclick="goToNewPage()"/>
+        </form>
+
+        <!-- Submit Salary Button -->
+        <button onclick="window.location.href='submit_salary.html';">
+        Contribute & Submit Salary
+        </button>
+
+        <h4><em>Business jobs compensation</em></h4>
+        <ul>
+            <li>Accounting (Deloitte, EY, KPMG, PWC, BDO, Grant Thornton, etc.)</li>
+            <li>Investment Banking (Goldman Sachs,  JP Morgan, Morgan Stanley, etc.)</li>
+            <li>Marketing (General Mills, Johnson & Johnson, Kellogg, L'Oréal, Mars, PepsiCo, etc.)</li>
+            <li>Management Consultants (McKinsey, Boston Consulting Group, Bain, etc.)</li>
+        </ul>
+
+        <h4><em>Tech jobs compensation</em></h4>
+        <ul>
+            <li>FAANG+M (Facebook, Apple, Amazon, Netflix, Google, Microsoft)</li>
+            <li>Fortune 100 (Cisco, Oracle, SAP, Shopify, etc. )</li>
+        </ul>
+
+        <h4><em>Other jobs compensation</em></h4>
+        <ul>
+            <li>Construction, Doctor, Dentist, Legal, Nurse, Sales, etc.</li>
+        </ul>
+
+        <p><a href="about.html">About this website</a></p>
+
+        <p><img src="maplesyruppic.jpg" alt="maplesyruppic" class="pics"> <img src="ca_map.jpg" alt="map" class="pics"></p>
+    </body>
+</html>
+
