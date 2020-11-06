@@ -1,21 +1,170 @@
-application.py
+application.py (version Emma)
 
 import random
-from flask import Flask, render_template, request
 
+# render_template is to allow return a template
+from flask import Flask, render_template
+
+# create a variable that will represent my Flask application
+# Flask(__name__) means I will be serving this flask application from this file that I'm writing right now
 app = Flask(__name__)
 
+# Route are what you type at the end of the URL for which page you want to visit
+# "/" is a default route. Every route in Flask is associated wtih a function
 @app.route("/")
+# call this function index
+def index():
+    # generate psuedo random number from 1 - 10 inclusive
+    number = random.randint(1, 10)
+    # render_template can return variables as well
+    # give index.html access to variable called name (value = "Emma")
+    return render_template("index.html", name="Emma")
+
+@app.route("/goodbye")
+def bye():
+    return "Goodbye!"
+
+========================================================
+application.py (version random number)
+
+import random
+
+# render_template is to allow return a template
+from flask import Flask, render_template
+
+# create a variable that will represent my Flask application
+# Flask(__name__) means I will be serving this flask application from this file that I'm writing right now
+app = Flask(__name__)
+
+# Route are what you type at the end of the URL for which page you want to visit
+# "/" is a default route. Every route in Flask is associated wtih a function
+@app.route("/")
+# call this function index
+def index():
+    # generate psuedo random number from 1 - 10 inclusive
+    number = random.randint(1, 10)
+    # render_template can return variables as well
+    # give index.html access to variable called number. The value of number is number.
+    return render_template("index.html", number=number)
+
+@app.route("/goodbye")
+def bye():
+    return "Goodbye!"
+
+======================================================================================
+13:35 application.py (version heads or tail)
+
+index.html (version heads or tail)
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Hello!</title>
+    </head>
+    <body>
+        <!--from application.py => plug in name variable-->
+        <!--this syntax is called Jinja (templating language) that Flask uses-->
+        <!-- {% is condition-->
+        {% if number == 1 %}
+            Your coin flip is HEADS.
+        {% else %}
+            Your coin flip is TAILS.
+        <!-- Jinja requires endif, specifying the end of the if statement-->
+        {% endif %}
+    </body>
+</html>
+==============================================
+index.html (hello route)
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Hello!</title>
+    </head>
+    <body>
+        <!--form can have action on what route we're taken to when form is submitted-->
+        <!--can make route to something we create-->
+        <form action="/hello">
+            <!-- allows user to enter text -->
+            <!-- name allows you to reference it later-->
+            <input name="name" type="text">
+            <!-- allows user to submit the form-->
+            <input type="submit">
+        </form>
+    </body>
+</html>
+
+========================================
+application.py (GET method - taking user inputted name)
+
+import random
+
+# render_template is to allow return a template
+from flask import Flask, render_template
+
+# create a variable that will represent my Flask application
+# Flask(__name__) means I will be serving this flask application from this file that I'm writing right now
+app = Flask(__name__)
+
+# Route are what you type at the end of the URL for which page you want to visit
+# "/" is a default route. Every route in Flask is associated wtih a function
+@app.route("/")
+# call this function index
 def index():
     return render_template("index.html")
 
 @app.route("/hello")
 def hello():
+    # When user submits form, using method of GET (default), to access parameters of that form submission
     name = request.args.get("name")
+    # Return render_template a new template called hello.html and passing in a variable called name. So that hello.html template can access it
+    return render_template("hello.html", name=name)
+    
+==============================================================
+hello.html
+
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Hello!</title>
+    </head>
+    <body>
+        Hello, {{ name }}!
+    </body>
+</html>
+================================
+application.py (so if you do not enter a name - it shows failure msg)
+
+import random
+
+# render_template is to allow return a template
+from flask import Flask, render_template, request
+
+# create a variable that will represent my Flask application
+# Flask(__name__) means I will be serving this flask application from this file that I'm writing right now
+app = Flask(__name__)
+
+# Route are what you type at the end of the URL for which page you want to visit
+# "/" is a default route. Every route in Flask is associated wtih a function
+@app.route("/")
+# call this function index
+def index():
+    return render_template("index.html")
+
+@app.route("/hello")
+def hello():
+    # When user submits form, using method of GET (default), to access parameters of that form submission
+    name = request.args.get("name")
+    # if no name is provided
     if not name:
         return render_template("failure.html")
+
+    # Return render_template a new template called hello.html and passing in a variable called name. So that hello.html template can access it
     return render_template("hello.html", name=name)
-        
+
 ==========================================
 failure.html
 
@@ -37,16 +186,25 @@ hello.html
 ========================================
 index.html
 
-{% extend "layout.html %}
+<!-- include all the content from layout.html => defines general structure of the page -->
+{% extends "layout.html" %}
 
-{% body block %}
-        <form action="/hello">
-            <input name="name" type="text">
-            <input type="submit">
-        </form>
+<!-- with the change, we are going to add something to block body => inside the body of the page, insert this form-->
+{% block body %}
+    <!--form can have action on what route we're taken to when form is submitted-->
+    <!--can make route to something we create-->
+    <form action="/hello">
+        <!-- allows user to enter text -->
+        <!-- name allows you to reference it later-->
+        <input name="name" type="text">
+        <!-- allows user to submit the form-->
+        <input type="submit">
+    </form>
 {% endblock %}
 
 =============================================
+layout.html
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -54,6 +212,7 @@ index.html
         <title>Hello!</title>
     </head>
     <body>
+        <!--there is going to be a block of HTML called body - that will be inserted right here in this part of layout.html-->
         {% block body %}
         {% endblock %}
     </body>
