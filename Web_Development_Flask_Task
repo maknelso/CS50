@@ -1,24 +1,32 @@
 application.py
--------------------------
-from flask import Flask, render_template, request, redirect
+
+from flask import Flask, redirect, render_template, request
 
 app = Flask(__name__)
 
+# global variable - empty list
 todos = []
 
 @app.route("/")
 def tasks():
+    # return a template: in particular, tasks.html
+    # we want to give tasks.html access to "todos" list - which is the list of things we need to do
+    # a variable that tasks.html will have access to, named todos
     return render_template("tasks.html", todos=todos)
 
+# by default, routes only accepts GET method. So now both GET and POST can be received by this /add route
 @app.route("/add", methods=["GET", "POST"])
 def add():
+    # if it is a GET request, I should just return add.html to allow them to add task in
     if request.method == "GET":
         return render_template("add.html")
     else:
+        # request.form.get allows me to access data from the form that was submitted via POST
+        # the name was task (from add.html)
         todo = request.form.get("task")
-        # Adding end of the todos list, todo
+        # adding to the end of the todos list, the newly submitted todo task
         todos.append(todo)
-        # Redirect the user back to default route
+        # now finally, we want to display the tasks using redirect
         return redirect("/")
        
 ==========================================
@@ -31,25 +39,29 @@ layout.html
         <title>Tasks</title>
     </head>
     <body>
+        <!-- Used to plug in information in each of my individual templates -->
         {% block body %}
         {% endblock %}
     </body>
 </html>
 
 =====================================================================
-tasks.html
+tasks.html (using li)
 
 {% extends "layout.html" %}
 
 {% block body %}
     <h1>Tasks</h1>
+    <!-- unordered list -->
     <ul>
-        {% for todo in todos %}
-            <li>{{ todo }}</li>
-        {% endfor %}
+        <!-- list item -->
+        <li>item one</li>
+        <li>item two</li>
+        <li>item three</li>
     </ul>
 
-    <a href="/add">Create a New Task</a>
+    <!-- link that takes me to "/new" -->
+    <a href="/new">Create a New Task</a>
 {% endblock %}
 
 ===================================================
@@ -57,19 +69,53 @@ add.html
 
 {% extends "layout.html" %}
 
-{% block body%}
+{% block body %}
+    <!-- action = add to add a new task -->
+    <!-- method = post request method - trying to send data to the server (instead of default of get) -->
     <form action="/add" method="post">
+        <!-- placeholder signals to user that they should enter in name of the task -->
+        <!-- name is allow referencing alter -->
         <input id="task" name="task" type="text" placeholder="Task Name">
+        <!-- disable submit button field by default (because nobody typed anything yet) -->
         <input id="submit" type="submit" disabled>
     </form>
 
+    <!-- script: allows me to add JS code -->
+    <!-- we want to only enable the submit button if there's some text in the textbox -->
+    <!-- to access the two inputs, we need to give them id (unique identifier for JS to reference later) -->
+    <!-- name is for Py and id is for JS?? -->
     <script>
+        // onkeyup is an event when the user lifts their finger off a key, when that happens we run a function
+        // adding an event listener to the thing with an id of task (input field where I can type in something)
+        // everytime I lift my finger off the key, run the function
         document.querySelector('#task').onkeyup = function(){
-            if(document.querySelector('#task').value === ''){
+            // function checks is there anything typed in to this task input field => is the value '' (empty)
+            if (document.querySelector('#task').value === ''){
+                // disable the submit button
                 document.querySelector('#submit').disabled = true;
             } else {
                 document.querySelector('#submit').disabled = false;
             }
         }
     </script>
+{% endblock %}
+======================================
+tasks.html (using {{ todo }})
+
+{% extends "layout.html" %}
+
+{% block body %}
+    <h1>Tasks</h1>
+    <!-- unordered list -->
+    <ul>
+        <!-- loop over this list of things to do and call each individual item in the list -->
+        {% for todo in todos %}
+            <!-- for each one of the todo, we want to create a list item for it -->
+            <!-- content is, take the content of the todo and put it in the list -->
+            <li>{{ todo }}</li>
+        {% endfor %}
+    </ul>
+
+    <!-- link that takes me to "/new" -->
+    <a href="/add">Create a New Task</a>
 {% endblock %}
