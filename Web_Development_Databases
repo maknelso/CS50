@@ -44,3 +44,9 @@ def add():
         session["todos"].append(todo)
         # now finally, we want to display the tasks using redirect
         return redirect("/")
+
+
+===========================================================================
+register folder - Create a new web app that will allow people to register for something. Application will store info/data for all registrants
+
+
