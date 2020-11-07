@@ -1,1 +1,46 @@
+application.py 
 
+# session - we now have access to a Py dictionary (collection of key value pairs) - called session where I can access info
+# that is going to be local to the user's current interaction with the web page (not dependent on what other users add in)
+from flask import Flask, redirect, render_template, request, session
+from flask_session import Session
+
+app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+# Location where you want to store your data pertaining to sessions is going to be any file system of the web server
+# that I'm running this application from - which in this case is CS50 IDE
+app.config["SESSION_TYPE"] = "filesystem"
+# Enable sessions for this particular Flask web
+Session(app)
+
+@app.route("/")
+def tasks():
+    # For the current user, do they already have a key called todos inside the current user's session dictionary?
+    # If not, then we will create a new key inside of the session dictionary called todos then set it to an empty list
+    # Check is there already a key called todos inside the session - if not, thena dd it to the session
+    if "todos" not in session:
+        # Then todos is an empty list
+        session["todos"] = []
+    # return a template: in particular, tasks.html
+    # we want to give tasks.html access to "todos" list - which is the list of things we need to do
+    # a variable that tasks.html will have access to, named todos
+
+    # For current user's interaction with this website (session), lets get at their list of things to do
+    return render_template("tasks.html", todos=session["todos"])
+
+# by default, routes only accepts GET method. So now both GET and POST can be received by this /add route
+@app.route("/add", methods=["GET", "POST"])
+def add():
+    # if it is a GET request, I should just return add.html to allow them to add task in
+    if request.method == "GET":
+        return render_template("add.html")
+    else:
+        # request.form.get allows me to access data from the form that was submitted via POST
+        # the name was task (from add.html)
+        # request.form.get("task") means get whatever the user typed in to that task field
+        todo = request.form.get("task")
+        # Take the current user's session, access their list of things to do, and add to the list the new thing that I need to do
+        # instead of using global var, we are using a part of the session dictionary in order to include and store data relevant to current user only
+        session["todos"].append(todo)
+        # now finally, we want to display the tasks using redirect
+        return redirect("/")
