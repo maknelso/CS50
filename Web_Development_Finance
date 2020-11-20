@@ -50,8 +50,6 @@ register.html
 {% endblock %}
 
 ---------------------------------------
-application.py
-
 import os
 
 from cs50 import SQL
@@ -167,49 +165,60 @@ def logout():
 @login_required
 def quote():
     """Get stock quote."""
-    return apology("TODO")
+    if request.method == "POST":
+
+        # Store the dictionary in variable called quote
+        quote = lookup(request.form.get("quote"))
+
+        # If symbol is invalid (dictionary returns none), return apology
+        if quote == None:
+            return apology("invalid symbol", 403)
+
+        # ***
+        else:
+            return render_template("quoted.html", name=quote["name"], symbol=quote["symbol"], price="$"(quote["price"]))
+
+    else:
+        return render_template("quote.html")
 
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-    # User reached route via GET
-    if request.method == "GET":
-        return render_template("register.html")
+    # User reached route via POST (submitting a form via POST)
+    if request.method == "POST":
 
-    # else: User reached route via POST - insert new user to users table
-    else:
-        # ERROR CHECKING:
         # Ensure username was submitted
         if not request.form.get("username"):
             return apology("must provide username", 403)
 
         # Ensure password was submitted
-        elif not request.form.get("password"):
+        elif not request.form.get("password") or not request.form.get("retypepassword"):
             return apology("must provide password", 403)
 
-        # Query database for username
+        # Ensure passwords match
+        elif request.form.get("password") != request.form.get("retypepassword"):
+            return apology("passwords to not match", 403)
+
+        # Query database for username -  if username exists, there should be 1 row (because every username is unique)
         rows = db.execute("SELECT * FROM users WHERE username = :username",
                           username=request.form.get("username"))
-
-        # If username exists, there should be 1 row (because every username is unique)
         if len(rows) == 1:
             return apology("username already exists", 403)
 
-        # check_password_hash function is imported - it checks to ensure the password corresponds to the particular hash value stored in db
-        if not check_password_hash(rows[0]["hash"], request.form.get("password")):
-            return apology("invalid password", 403)
-
         # If no errors, finally, insert new user to users table - store hash of the user's password
-        rows2 = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
+        result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
                             username=request.form.get("username"),
-                            hash=request.form.get("password"));
+                            hash=generate_password_hash(request.form.get("password")));
 
         # **Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
         # Redirect user to home page
         return redirect("/")
+
+    else:
+        return render_template("register.html")
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
