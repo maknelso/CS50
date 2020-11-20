@@ -193,7 +193,6 @@ def register():
                           username=request.form.get("username"))
 
         # If username exists, there should be 1 row (because every username is unique)
-
         if len(rows) == 1:
             return apology("username already exists", 403)
 
@@ -202,8 +201,15 @@ def register():
             return apology("invalid password", 403)
 
         # If no errors, finally, insert new user to users table - store hash of the user's password
-        rows2 = db.execute("INSERT INTO users (username, hash) VALUES (:username, generate_password_hash(:password))",
-                            username=request.form.get("username"), password=request.form.get("password"));
+        rows2 = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
+                            username=request.form.get("username"),
+                            hash=request.form.get("password"));
+
+        # **Remember which user has logged in
+        session["user_id"] = rows[0]["id"]
+
+        # Redirect user to home page
+        return redirect("/")
 
 @app.route("/sell", methods=["GET", "POST"])
 @login_required
