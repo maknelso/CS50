@@ -148,19 +148,22 @@ def register():
             return apology("must provide password", 400)
 
         # Ensure password and confirmation match
-        elif request.form.get("password") != request.form.get("confirmation"):
+        elif request.form.get("password") != request.form.get("retypepassword"):
             return apology("your passwords don't match", 400)
 
-        # Insert username and hash of password in the database
+        # If no errors, finally, insert new user to users table - store hash of the user's password
         result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
                             username=request.form.get("username"), hash=generate_password_hash(request.form.get("password")))
+
         # Ensure username is not repeated
         if not result:
             return apology("username unavailable", 400)
 
-        # Start session
-        rows = db.execute("SELECT * FROM users WHERE username = :username", username=request.form.get("username"))
+        # ****Start session
+        rows = db.execute("SELECT * FROM users WHERE username = :username",
+                           username=request.form.get("username"))
 
+        # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
         # redirect user to home
