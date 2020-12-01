@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Quoted
+{% endblock %}
+
+<!-- quoted.html displays form after a stock quote, POST method -->
+{% block main %}
+    <p>
+        A share of {{ name }} ({{ symbol }}) costs ${{ price }}.
+    </p>
+{% endblock %}
