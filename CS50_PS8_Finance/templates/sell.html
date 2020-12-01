@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Sell
+{% endblock %}
+
+<!-- need a drop down menu -->
+{% block main %}
+    <form action="/login" method="post">
+
+        <div class="dropdown">
+            <button onclick="myFunction()" class="dropbtn">Symbol</button>
+            <div id="myDropdown" class="dropdown-content">
+                <a> </a>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <input autocomplete="off" autofocus class="form-control" name="Shares" placeholder="Shares" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Sell</button>
+    </form>
+{% endblock %}
