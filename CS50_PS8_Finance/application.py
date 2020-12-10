@@ -319,7 +319,7 @@ def sell():
 
     else:
         # Provide only the symbols the user already has in his/her portfolio
-        rows = db.execute("""
+        symbols = db.execute("""
                 SELECT symbol
                 FROM transactions
                 WHERE user_id = :user_id
@@ -328,7 +328,7 @@ def sell():
         """, user_id=session["user_id"])
 
         # Creating a list
-        return render_template("sell.html", symbols = [row["symbol"] for row in rows])
+        return render_template("sell.html", symbols=symbols)
 
 
 def errorhandler(e):
