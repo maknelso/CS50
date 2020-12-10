@@ -4,12 +4,11 @@
     Quote
 {% endblock %}
 
-<!-- quote.html display form to request a stock quote, GET method -->
 {% block main %}
     <form action="/quote" method="post">
         <!-- form-group adds spacing between input field and button -->
         <div class="form-group">
-            <!-- autofocus makes it so user does not have to click inside the text field -->
+            <!-- turning off autocomplete. autofocus makes it so user does not have to click inside the text field. form-control adds halo -->
             <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Symbol" type="text">
         </div>
         <!-- btn btn-primary gives blue button -->
