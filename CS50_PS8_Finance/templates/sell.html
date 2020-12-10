@@ -4,19 +4,24 @@
     Sell
 {% endblock %}
 
-<!-- need a drop down menu -->
 {% block main %}
-    <form action="/login" method="post">
-
-        <div class="dropdown">
-            <button onclick="myFunction()" class="dropbtn">Symbol</button>
-            <div id="myDropdown" class="dropdown-content">
-                <a> </a>
-            </div>
-        </div>
-
+    <form action="/sell" method="post">
+        <!-- class="form-group" is Bootstrap for spacing -->
         <div class="form-group">
-            <input autocomplete="off" autofocus class="form-control" name="Shares" placeholder="Shares" type="text">
+            <!-- Use select construct to create drop down menu in HTML -->
+            <!-- class="form-control" is from Bootstrap as well -->
+            <select class="form-control" name="symbol">
+                <!-- default value is nothing -->
+                <option disabled selected value="">Symbol</option>
+                <!-- jinja2 template language -->
+                {% for symbol in symbols%}
+                    <!-- quotation is what is sent to back-end (application.py), 2nd symbol is what is shown -->
+                    <option value="{{symbol.symbol}}">{{symbol.symbol}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input autocomplete="off" class="form-control" name="shares" min="1" placeholder="Number of Shares" type="number">
         </div>
         <button class="btn btn-primary" type="submit">Sell</button>
     </form>
