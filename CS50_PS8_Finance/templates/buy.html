@@ -4,16 +4,13 @@
     Buy
 {% endblock %}
 
-<!-- quote.html display form to request a stock quote, GET method -->
 {% block main %}
-    <form action="/login" method="post">
+    <form action="/buy" method="post">
         <div class="form-group">
-            <!-- ticker symbol -->
             <input autocomplete="off" autofocus class="form-control" name="symbol" placeholder="Symbol" type="text">
         </div>
         <div class="form-group">
-            <!-- number of shares -->
-            <input autocomplete="off" autofocus class="form-control" name="shares" placeholder="Shares" type="text">
+            <input autocomplete="off" class="form-control" name="shares" min="1" placeholder="Number of Shares" type="number">
         </div>
         <button class="btn btn-primary" type="submit">Buy</button>
     </form>
