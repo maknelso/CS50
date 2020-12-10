@@ -49,28 +49,33 @@ def index():
                               WHERE user_id = :user_id
                               GROUP BY symbol
                               HAVING total_shares > 0
-                              ORDER BY symbol""",
-                              user_id=session["user_id"])
+                              ORDER BY symbol
+                           """,
+                           user_id=session["user_id"]
+                          )
 
-    # Initialize an empty dictionary
+    # Initialization
     holdings = []
     grand_total = 0
 
     for row in portfolio:
-        # Use lookup function, lookup the symbol from portfolio tbl and store dict in a variable named stock
-        stock = lookup(row["symbol"])
+        # Use lookup function, lookup the symbol from portfolio tbl, and store dict in a variable named 'quoted'
+        quoted = lookup(row["symbol"])
+
         # Append dict into holdings - key value pairs
         holdings.append({
-            "symbol": stock["symbol"],
-            "name": stock["name"],
-            "shares": row["total_shares"],
-            "price": usd(stock["price"]),
-            "total": usd(stock["price"] * row["total_shares"])
-        })
-        grand_total += stock["price"] * row["total_shares"]
+                         "symbol": quoted["symbol"],
+                         "name": quoted["name"],
+                         "shares": row["total_shares"],
+                         "price": usd(quoted["price"]),
+                         "total": usd(quoted["price"] * row["total_shares"])
+                        })
+
+        grand_total += quoted["price"] * row["total_shares"]
 
     rows = db.execute("SELECT cash FROM users WHERE id = :id",
                        id=session["user_id"])
+
     cash = rows[0]["cash"]
     grand_total += cash
 
@@ -84,8 +89,9 @@ def buy():
     """Buy shares of stock"""
     if request.method == "POST":
 
-        # Error checking:
         quoted = lookup(request.form.get("symbol"))
+
+        # Error checking
         if quoted == None:
             return apology("Please enter a valid ticker symbol.")
         elif not request.form.get("shares"):
@@ -100,27 +106,28 @@ def buy():
         # Purchase power required is equal to # of shares * price of a share
         purchase_price = int(request.form.get("shares")) * quoted["price"]
 
-        # Cannot just int a list. Require going into cash_balance[0] - first row, from first row, get the value of "cash"
-        if int(cash_balance[0]["cash"]) < purchase_price:
+        # Cannot just int a list (cash_balance).
+        # We require going into cash_balance[0] -- go into cash_balance first row, then from first row, get the value of "cash"
+        if cash_balance[0]["cash"] < purchase_price:
             return apology("You do not have sufficient funds to purchase the specified share at desired number of shares.")
 
+        # Else, the user has sufficient cash to purchase
         else:
             # Update users table cash balance
             db.execute("UPDATE users SET cash = cash - :purchase_price WHERE id = :id",
                         purchase_price=purchase_price,
                         id=session["user_id"])
 
-            # Added transactions table (self-created) in finance.db
-            # Timestamp is auto filled in
+            # INSERT INTO transactions table (self-created table in finance.db) information of purchase -- timestamp is auto filled in
             db.execute("""
-                INSERT INTO transactions (user_id, symbol, shares, price)
-                VALUES (:user_id, :symbol, :shares, :price)
-                """,
-                user_id=session["user_id"],
-                symbol=quoted["symbol"],
-                shares=request.form.get("shares"),
-                price=quoted["price"]
-                )
+                       INSERT INTO transactions (user_id, symbol, shares, price)
+                       VALUES (:user_id, :symbol, :shares, :price)
+                       """,
+                       user_id=session["user_id"],
+                       symbol=quoted["symbol"],
+                       shares=request.form.get("shares"),
+                       price=quoted["price"]
+                       )
             # Shows Bought! message bar on top
             flash("Bought!")
 
@@ -192,7 +199,7 @@ def quote():
     """Get stock quote."""
     if request.method == "POST":
 
-        # Store dictionary in a variable called quoted. Inside finance dictionary code (helpers.py) a function is implemented named lookup.
+        # Store dictionary in a variable named 'quoted'. Inside finance dictionary code (helpers.py) is a function implemented named lookup.
         quoted = lookup(request.form.get("symbol"))
         # Ensure user typed in a valid symbol
         if quoted == None:
@@ -259,42 +266,39 @@ def sell():
     """Sell shares of stock"""
     if request.method == "POST":
 
-        # Error checking:
         quoted = lookup(request.form.get("symbol"))
+
+        # Error checking:
         if quoted == None:
-            return apology("Please enter a valid ticker symbol.")
+            return apology("Please select a valid ticker symbol.")
         elif not request.form.get("shares"):
             return apology("Please enter number of shares you desire to purchase.")
         elif not request.form.get("shares").isdigit() or int(request.form.get("shares")) < 1:
             return apology("Please enter a valid number of shares you desire to purchase - whole numbers only (no fractional shares).")
-
         # Need an error checking to make sure in sell.html, the symbol we select is in our portfolio
         # (in case someone changes it in inspect page source)
 
-        symbol = request.form.get("symbol")
-        # Store result of lookup function (a dictionary) in a variable named stock
-        stock = lookup(symbol)
-        shares = int(request.form.get("shares"))
+        requested_symbol = request.form.get("symbol")
+        requested_shares = int(request.form.get("shares"))
 
         rows = db.execute("""
-                SELECT symbol, SUM(shares) as total_shares
-                FROM transactions
-                WHERE user_id = :user_id
-                GROUP BY symbol
-                HAVING total_shares > 0
-               """, user_id=session["user_id"])
+                        SELECT symbol, SUM(shares) as total_shares
+                        FROM transactions
+                        WHERE user_id = :user_id
+                        GROUP BY symbol
+                        HAVING total_shares > 0
+                        """, user_id=session["user_id"])
         for row in rows:
-            if row["symbol"] == symbol:
+            if row["symbol"] == requested_symbol:
                 # Check if user has adequate amount of shares in his/her portfolio
-                if shares > row["total_shares"]:
+                if requested_shares > row["total_shares"]:
                     return apology("You do not have sufficent amount of shares for this stock to sell.")
-
 
         # Query cash from users tbl to ensure user has enough cash to purchase desired number of shares
         cash_balance = db.execute("SELECT cash FROM users WHERE id = :id",
                                    id=session["user_id"])
         cash = cash_balance[0]["cash"]
-        updated_cash = cash + shares * stock["price"]
+        updated_cash = cash + (requested_shares * quoted["price"])
 
         # Update users table cash balance
         db.execute("UPDATE users SET cash = :updated_cash WHERE id = :id",
@@ -307,11 +311,11 @@ def sell():
                    INSERT INTO transactions (user_id, symbol, shares, price)
                    VALUES (:user_id, :symbol, :shares, :price)
                    """,
-                user_id=session["user_id"],
-                symbol=quoted["symbol"],
-                shares=int(-shares),
-                price=stock["price"]
-                )
+                   user_id=session["user_id"],
+                   symbol=quoted["symbol"],
+                   shares=int(-requested_shares),
+                   price=quoted["price"]
+                  )
         # Shows Sold! message bar on top
         flash("Sold!")
 
@@ -320,12 +324,14 @@ def sell():
     else:
         # Provide only the symbols the user already has in his/her portfolio
         symbols = db.execute("""
-                SELECT symbol
-                FROM transactions
-                WHERE user_id = :user_id
-                GROUP BY symbol
-                HAVING SUM(shares) > 0
-        """, user_id=session["user_id"])
+                            SELECT symbol
+                            FROM transactions
+                            WHERE user_id = :user_id
+                            GROUP BY symbol
+                            HAVING SUM(shares) > 0
+                            """,
+                            user_id=session["user_id"]
+                            )
 
         # Creating a list
         return render_template("sell.html", symbols=symbols)
