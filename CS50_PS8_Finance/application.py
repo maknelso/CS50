@@ -257,52 +257,78 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-
     if request.method == "POST":
-        # First, store the symbol input dictionary in a variable named 'looked'
-        looked = lookup(request.form.get("symbol"))
 
-        rows = db.execute("SELECT symbol, shares FROM transactions WHERE user_id = :user_id",
-                          user_id=session["user_id"])
+        # Error checking:
+        quoted = lookup(request.form.get("symbol"))
+        if quoted == None:
+            return apology("Please enter a valid ticker symbol.")
+        elif not request.form.get("shares"):
+            return apology("Please enter number of shares you desire to purchase.")
+        elif not request.form.get("shares").isdigit() or int(request.form.get("shares")) < 1:
+            return apology("Please enter a valid number of shares you desire to purchase - whole numbers only (no fractional shares).")
 
-        holdings = []
+        # Need an error checking to make sure in sell.html, the symbol we select is in our portfolio
+        # (in case someone changes it in inspect page source)
 
-        proceeds = 0
+        symbol = request.form.get("symbol")
+        # Store result of lookup function (a dictionary) in a variable named stock
+        stock = lookup(symbol)
+        shares = int(request.form.get("shares"))
 
+        rows = db.execute("""
+                SELECT symbol, SUM(shares) as total_shares
+                FROM transactions
+                WHERE user_id = :user_id
+                GROUP BY symbol
+                HAVING total_shares > 0
+               """, user_id=session["user_id"])
         for row in rows:
-            holdings.append({
-                "symbol": rows["symbol"],
-                "shares": rows["shares"]
-            })
+            if row["symbol"] == symbol:
+                # Check if user has adequate amount of shares in his/her portfolio
+                if shares > row["total_shares"]:
+                    return apology("You do not have sufficent amount of shares for this stock to sell.")
 
-        # Ensure user has the symbol
-        if request.form.get("symbol") in holdings["shares"]:
-            return apology("You do not own this stock.")
 
-        # Make sure we are in the correct row where we have the same symbol
-        elif request.form.get("symbol") in holdings["shares"] and request.form.get("shares") > holdings["shares"]:
-            return apology("You do not currently own enough shares to sell desired amount.")
+        # Query cash from users tbl to ensure user has enough cash to purchase desired number of shares
+        cash_balance = db.execute("SELECT cash FROM users WHERE id = :id",
+                                   id=session["user_id"])
+        cash = cash_balance[0]["cash"]
+        updated_cash = cash + shares * stock["price"]
 
-        # If error checking conditions are all passed
-        else:
-            # Subtract shares in tracker table
-            db.execute("UPDATE transactions SET shares = shares - :shares WHERE user_id = :user_id AND symbol = :symbol",
-                       shares=request.form.get("shares"),
-                       user_id=session["user_id"],
-                       symbol=request.form.get("symbol")
+        # Update users table cash balance
+        db.execute("UPDATE users SET cash = :updated_cash WHERE id = :id",
+                        updated_cash=updated_cash,
+                        id=session["user_id"])
 
-            # need to figure out the error
-            proceeds = int(request.form.get("shares")) * looked["price"]
+        # Added transactions table (self-created) in finance.db
+        # Timestamp is auto filled in
+        db.execute("""
+                   INSERT INTO transactions (user_id, symbol, shares, price)
+                   VALUES (:user_id, :symbol, :shares, :price)
+                   """,
+                user_id=session["user_id"],
+                symbol=quoted["symbol"],
+                shares=int(-shares),
+                price=stock["price"]
+                )
+        # Shows Sold! message bar on top
+        flash("Sold!")
 
-            # Update cash in users table
-            db.execute("UPDATE users SET cash = cash + :proceeds WHERE id = :id",
-                        proceeds=proceeds)
-
-        # Redirect user to home page
         return redirect("/")
 
     else:
-        return render_template("sell.html")
+        # Provide only the symbols the user already has in his/her portfolio
+        rows = db.execute("""
+                SELECT symbol
+                FROM transactions
+                WHERE user_id = :user_id
+                GROUP BY symbol
+                HAVING SUM(shares) > 0
+        """, user_id=session["user_id"])
+
+        # Creating a list
+        return render_template("sell.html", symbols = [row["symbol"] for row in rows])
 
 
 def errorhandler(e):
