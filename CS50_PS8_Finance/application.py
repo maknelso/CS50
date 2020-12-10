@@ -1,4 +1,4 @@
-import os, types
+import os
 
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
@@ -16,15 +16,12 @@ app = Flask(__name__)
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
 # Ensure responses aren't cached
-
-
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
-
 
 # Custom filter
 app.jinja_env.filters["usd"] = usd
@@ -42,99 +39,103 @@ db = SQL("sqlite:///finance.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
+
 @app.route("/")
 @login_required
 def index():
     """Show portfolio of stocks"""
-    # Guidance from https://cs50.stackexchange.com/questions/30264/pset7-finance-index
+    portfolio = db.execute("""SELECT symbol, SUM(shares) AS total_shares
+                              FROM transactions
+                              WHERE user_id = :user_id
+                              GROUP BY symbol
+                              HAVING total_shares > 0
+                              ORDER BY symbol""",
+                              user_id=session["user_id"])
 
-    # Display HTML table summary, for user logged in: which stocks the user owns (ticker symbol), # of sh, CURRENT PRICE of each stock, total value of each stock
-    # Also display cash balance and grand total
-    # CREATE TABLE 'tracker' ('Username' PRIMARY KEY, 'Symbol' VARCHAR(10), 'Name' VARCHAR(10), 'Price' NUMERIC, 'Shares' INT, 'total' NUMERIC);
+    # Initialize an empty dictionary
+    holdings = []
+    grand_total = 0
 
-    # Query tracker database and put information in a variable called stocks
-    stocks = db.execute("SELECT Symbol, Shares FROM tracker WHERE username = :username",
-                       session["user_id"])
+    for row in portfolio:
+        # Use lookup function, lookup the symbol from portfolio tbl and store dict in a variable named stock
+        stock = lookup(row["symbol"])
+        # Append dict into holdings - key value pairs
+        holdings.append({
+            "symbol": stock["symbol"],
+            "name": stock["name"],
+            "shares": row["total_shares"],
+            "price": usd(stock["price"]),
+            "total": usd(stock["price"] * row["total_shares"])
+        })
+        grand_total += stock["price"] * row["total_shares"]
 
-    # Py loop - iterate over stocks list:
-    for stock in stocks:
-        symbol = stocks["Symbol"]
-        name = lookup(symbol)["name"]
-        shares = stocks["Shares"]
-        price = lookup(symbol)["price"]
-        total = shares * price
+    rows = db.execute("SELECT cash FROM users WHERE id = :id",
+                       id=session["user_id"])
+    cash = rows[0]["cash"]
+    grand_total += cash
 
-    # Query user database for cash available
-    cash_avail = db.execute("SELECT cash FROM users WHERE username = :username", username = session["user_id"])
-    grand_total = SUM(total) + cash_avail
-
-    return render_template("index.html", stocks=stocks, cash_avail=cash_avail, grand_total=grand_total)
+    # holdings=holdings is for the loop in index.html
+    return render_template("index.html", holdings=holdings, cash=usd(cash), grand_total=usd(grand_total))
 
 
 @app.route("/buy", methods=["GET", "POST"])
 @login_required
 def buy():
     """Buy shares of stock"""
-
-    # User reached route via POST (by submitting a form)
     if request.method == "POST":
 
-    # Store the dictionary in variable called quoted
-        ticker = lookup(request.form.get("symbol"))
-        num_of_shares = request.form.get("shares")
-        #** THIS MIGHT BE WRONG current_price = quoted["price"]
-        total_cost = shares * current_price
+        # Error checking:
+        quoted = lookup(request.form.get("symbol"))
+        if quoted == None:
+            return apology("Please enter a valid ticker symbol.")
+        elif not request.form.get("shares"):
+            return apology("Please enter number of shares you desire to purchase.")
+        elif not request.form.get("shares").isdigit() or int(request.form.get("shares")) < 1:
+            return apology("Please enter a valid number of shares you desire to purchase - whole numbers only (no fractional shares).")
 
-    # Error checking:
-    # Require input of a ticker symbol, render an apology if the input is blank or the symbol does not exist (as per the return value of lookup).
-        if not request.form.get("symbol") or ticker == None:
-            return apology("Please enter a valid ticker symbol", 403)
+        # Query cash from users tbl to ensure user has enough cash to purchase desired number of shares
+        cash_balance = db.execute("SELECT cash FROM users WHERE id = :id",
+                                   id=session["user_id"])
 
-    # Require a user input a number of shares, implemented as a text field whose name is shares. Render an apology if the input is not a positive integer.
-        elif not shares.isdigit() or num_of_shares < 1:
-            return apology("Please enter a valid number of share(s)", 403)
+        # Purchase power required is equal to # of shares * price of a share
+        purchase_price = int(request.form.get("shares")) * quoted["price"]
 
-    # SELECT how much cash the user currently has in users.
-        cash_amount = db.execute("SELECT cash FROM users WHERE username = :username",
-                                 session["user_id"])
-        # Return apology if user cannot afford the number of shares at the current price
-        if cash_amount < total_cost:
-            return apology("You have insufficient funds to purchase desired number of shares at current price.")
+        # Cannot just int a list. Require going into cash_balance[0] - first row, from first row, get the value of "cash"
+        if int(cash_balance[0]["cash"]) < purchase_price:
+            return apology("You do not have sufficient funds to purchase the specified share at desired number of shares.")
+
         else:
-            # Subtract amount purchased from user's cash
-            db.execute("UPDATE users SET cash = cash - :cost WHERE username = :username", cost = cost, username = session["user_id"])
+            # Update users table cash balance
+            db.execute("UPDATE users SET cash = cash - :purchase_price WHERE id = :id",
+                        purchase_price=purchase_price,
+                        id=session["user_id"])
 
-            # INSERT information into newly created 'tracker' tbl
-            # Did not create the table yet => need to run in sqlite3
-            # CREATE TABLE 'tracker' ('Username' PRIMARY KEY, 'Symbol' VARCHAR(10), 'Name' VARCHAR(10), 'Price' NUMERIC, 'Shares' NUMERIC, 'total' NUMERIC, 'Transacted' TEXT);
-            db.execute("INSERT INTO tracker (Username, Symbol, Name, Shares, Price, Total, Transacted) VALUES (:username, :symbol, :name, :shares, :price, :total, :transacted)",
-                        username=session["user_id"], symbol=ticker, name=lookup("name"), shares=num_of_shares, price=current_price, total=total_cost, transacted=CURRENT_TIMESTAMP))
+            # Added transactions table (self-created) in finance.db
+            # Timestamp is auto filled in
+            db.execute("""
+                INSERT INTO transactions (user_id, symbol, shares, price)
+                VALUES (:user_id, :symbol, :shares, :price)
+                """,
+                user_id=session["user_id"],
+                symbol=quoted["symbol"],
+                shares=request.form.get("shares"),
+                price=quoted["price"]
+                )
+            # Shows Bought! message bar on top
+            flash("Bought!")
 
-        # Add one or more new tables to finance.db via which to keep track of purchase
-        # Keep track of at least: what stock was bought, how many shares of stock bought, who bought that stock
-        # CREATE TABLE 'tracker' ('Username' PRIMARY KEY, 'Symbol' VARCHAR(10), 'Name' VARCHAR(10), 'Price' NUMERIC, 'Shares' NUMERIC, 'total' NUMERIC, 'Transacted' TEXT);
+            return redirect("/")
 
-        # Redict user back to the portfolio
-        return redirect("/")
-
-    # Else: user request method is GET - display form to buy stock
+    # User selected GET (get form)
     else:
         return render_template("buy.html")
+
 
 @app.route("/history")
 @login_required
 def history():
     """Show history of transactions"""
-    history = db.execute("SELECT Symbol, Shares, Price, Transacted FROM tracker WHERE user = :username ORDER BY Transacted DESC",
-                         username=session["user_id"])
-
-    for history in historys:
-        symbol = history["Symbol"]
-        shares = history["Shares"]
-        price = history["Price"]
-        transacted = history["Transacted"]
-
-    return render_template("history.html", symbol=symbol, shares=shares, price=price, transacted=transacted)
+    return apology("TODO")
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -144,7 +145,7 @@ def login():
     # Forget any user_id
     session.clear()
 
-    # User reached route via POST (by submitting a form)
+    # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
         # Ensure username was submitted
@@ -191,15 +192,15 @@ def quote():
     """Get stock quote."""
     if request.method == "POST":
 
-        # Store the dictionary in variable called quoted
+        # Store dictionary in a variable called quoted. Inside finance dictionary code (helpers.py) a function is implemented named lookup.
         quoted = lookup(request.form.get("symbol"))
-
-        # If symbol is invalid (dictionary returns None), return apology
+        # Ensure user typed in a valid symbol
         if quoted == None:
-            return apology("invalid symbol", 403)
+            return apology("Please enter a valid ticker symbol.")
 
         else:
-            return render_template("quoted.html", name=quoted["name"], symbol=quoted["symbol"], price=(quoted["price"]))
+            return render_template("quoted.html", company_name=quoted["name"], ticker_symbol=quoted["symbol"],
+                                   price_per_share=quoted["price"])
 
     else:
         return render_template("quote.html")
@@ -208,45 +209,46 @@ def quote():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
-
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
 
-        # Ensure username is not empty
+        # Check for username input
         if not request.form.get("username"):
-            return apology("must provide username", 400)
+            return apology("Please provide username.")
 
-        # Ensure password is not empty
+        # Check for password input
         elif not request.form.get("password"):
-            return apology("must provide password", 400)
+            return apology("Please provide password.")
 
-        # Ensure password and confirmation match
-        elif request.form.get("password") != request.form.get("retypepassword"):
-            return apology("your passwords don't match", 400)
+        # Check for password confirmation input
+        elif not request.form.get("confirmpass"):
+            return apology("Please provide confirmation password.")
 
+        # Check if password and confirmation password are the same
+        elif request.form.get("password") != request.form.get("confirmpass"):
+            return apology("Passwords do not match.")
+
+        # Check if username is already registered.
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = :username",
                           username=request.form.get("username"))
 
-        # If username exists, return error
+        # If there is one row (username is unique)
         if len(rows) == 1:
-            return apology("username already exists", 403)
+            return apology("Sorry, username is already registered.")
 
-        # If no errors, insert new user to users table - store hash of the user's password
-        result = db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
-                            username=request.form.get("username"), hash=generate_password_hash(request.form.get("password")))
-
-        # ****Start session
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                           username=request.form.get("username"))
+        # If pass all error checking conditions, insert new user to the users table
+        db.execute("INSERT INTO users (username, hash) VALUES (:username, :hash)",
+                    username=request.form.get("username"),
+                    hash=generate_password_hash(request.form.get("password")))
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
 
-        # redirect user to home
+        # Redirect user to home page
         return redirect("/")
 
-    # User reached route via GET (as by clicking a link or via redirect)
+    # else, the user reached route via GET
     else:
         return render_template("register.html")
 
@@ -255,55 +257,50 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    # User reached route via POST (by submitting a form)
+
     if request.method == "POST":
+        # First, store the symbol input dictionary in a variable named 'looked'
+        looked = lookup(request.form.get("symbol"))
 
-        # Query tracker table
-        tracker = db.execute("SELECT * FROM tracker WHERE username=:username", username=session["user_id"])
+        rows = db.execute("SELECT symbol, shares FROM transactions WHERE user_id = :user_id",
+                          user_id=session["user_id"])
 
-        # Set variable for number of shares owned before selling
-        shares_owned = db.execute("SELECT Shares FROM tracker where username = :username AND Symbol = :symbol",
-                                    username=session["user_id"], symbol=request.form.get("symbol"))
+        holdings = []
 
-        # ERROR CHECKING:
-        # Render apology if user fails to select a stock
-        if not request.form.get("symbol"):
-            return apology("Please enter valid stock ticker symbol.")
+        proceeds = 0
 
-        # Render apology if if the user does not own any of the stock - *** need a loop to check condition if symbol is in tracker??
-        if request.form.get("symbol") not in tracker["Name"]:
-            return apology("You do not currently own this stock.")
+        for row in rows:
+            holdings.append({
+                "symbol": rows["symbol"],
+                "shares": rows["shares"]
+            })
 
-        # Render apology if user input is not a positive integer or if the user does not own that many shares of the stock
-        if request.form.get("shares") < 1 or not request.form.get("shares").isdigits():
-            return apology("Please enter valid number of shares (must be a positive integer).")
+        # Ensure user has the symbol
+        if request.form.get("symbol") in holdings["shares"]:
+            return apology("You do not own this stock.")
 
-        # Render apology if user does not own enough of that stock
-        if request.form.get("shares") > shares_owned:
-            return apology("You do not have enough amount of shares of this stock to sell desired amount.")
+        # Make sure we are in the correct row where we have the same symbol
+        elif request.form.get("symbol") in holdings["shares"] and request.form.get("shares") > holdings["shares"]:
+            return apology("You do not currently own enough shares to sell desired amount.")
 
-        # Set variable for sold value
-        sold_value = request.form.get("shares") * lookup(symbol)["price"]
+        # If error checking conditions are all passed
+        else:
+            # Subtract shares in tracker table
+            db.execute("UPDATE transactions SET shares = shares - :shares WHERE user_id = :user_id AND symbol = :symbol",
+                       shares=request.form.get("shares"),
+                       user_id=session["user_id"],
+                       symbol=request.form.get("symbol")
 
-        # After passing all error-checking conditions above:
-        # Sell the specified number of shares
-        db.execute("UPDATE ")
+            # need to figure out the error
+            proceeds = int(request.form.get("shares")) * looked["price"]
 
-        # Update cash balance in user table
-        db.execute("UPDATE users SET cash = cash + sold_value WHERE username = :username",
-                    username=session["user_id"])
+            # Update cash in users table
+            db.execute("UPDATE users SET cash = cash + :proceeds WHERE id = :id",
+                        proceeds=proceeds)
 
-        # Update number of shares in tracker table
-        db.execute("UPDATE tracker SET Shares = shares - request.form.get("shares") WHERE username = :username",
-                    username=session["user_id"])
-
-        # Update for history tbl
-
-        # redirect user to home
+        # Redirect user to home page
         return redirect("/")
 
-    # else: user reached route via GET
-    # Display form to sell stock (what stock and how many shares)
     else:
         return render_template("sell.html")
 
@@ -318,7 +315,3 @@ def errorhandler(e):
 # Listen for errors
 for code in default_exceptions:
     app.errorhandler(code)(errorhandler)
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
