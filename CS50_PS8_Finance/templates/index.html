@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 
-<!-- BUILD THE INDEX TABLE FIRST, THEN ALLOW VARIABLES TO COME THROUGH VIA PYTHON LOOP -->
 {% block title %}
-    Index
+    Portfolio
 {% endblock %}
 
 {% block main %}
-    <table>
+    <table class="table table-striped">
       <thead>
         <tr>
           <th>Symbol</th>
@@ -19,31 +18,27 @@
 
       <tbody>
         <!-- jinja2 code -->
-        {% for stock in stocks %}
+        {% for holding in holdings %}
         <tr>
-          <td>{{ stock.symbol }}</td>
-          <td>{{ stock.name }}</td>
-          <td>{{ stock.shares }}</td>
-          <td>{{ stock.price }}</td>
-          <td>{{ stock.total }}</td>
+          <td>{{holding["symbol"]}}</td>
+          <td>{{holding["name"]}}</td>
+          <td>{{holding["shares"]}}</td>
+          <td>{{holding["price"]}}</td>
+          <td>{{holding["total"]}}</td>
         </tr>
         {% endfor %}
       <thead>
         <tr>
-          <td>CASH</td>
-          <td> </td>
-          <td> </td>
-          <td> </td>
-          <td> {{ cash_avail }} </td>
+          <td> CASH </td>
+          <!-- skip 3 rows -->
+          <td colspan="3"></td>
+          <td>{{cash}}</td>
         </tr>
       </thead>
       <thead>
         <tr>
-          <td> </td>
-          <td> </td>
-          <td> </td>
-          <td> </td>
-          <td> {{ grand_total }} </td>
+          <td colspan="4"></td>
+          <td><b>{{grand_total}}</b></td>
         </tr>
       </thead>
       </tbody>
