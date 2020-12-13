@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 
-<!-- BUILT HISTORY TABLE FIRST, THEN ALLOW VARIABLES TO COME THROUGH VIA PYTHON LOOP -->
 {% block title %}
     History
 {% endblock %}
 
 {% block main %}
-    <table>
+    <table class="table table-striped">
       <thead>
         <tr>
           <th>Symbol</th>
@@ -15,15 +14,14 @@
           <th>Transacted</th>
         </tr>
       </thead>
-
       <tbody>
         <!-- jinja2 code -->
-        {% for history in historys %}
+        {% for transaction in transactions %}
         <tr>
-          <td>{{ history.symbol }}</td>
-          <td>{{ history.shares }}</td>
-          <td>{{ history.price }}</td>
-          <td>{{ history.transacted }}</td>
+          <td>{{transaction["symbol"]}}</td>
+          <td>{{transaction["shares"]}}</td>
+          <td>{{transaction["price"]}}</td>
+          <td>{{transaction["transacted"]}}</td>
         </tr>
         {% endfor %}
       </tbody>
