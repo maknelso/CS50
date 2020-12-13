@@ -39,6 +39,20 @@ db = SQL("sqlite:///finance.db")
 if not os.environ.get("API_KEY"):
     raise RuntimeError("API_KEY not set")
 
+@app.route("/add_cash", methods=["GET", "POST"])
+@login_required
+def add_cash():
+    if request.method == "POST":
+        # Update cash balance
+        db.execute("UPDATE users SET cash = cash + :amount_added WHERE id = :id",
+                    amount_added=request.form.get("cash"),
+                    id=session["user_id"])
+        flash("Added cash!")
+        return redirect("/")
+
+    else:
+        return render_template("add_cash.html")
+
 
 @app.route("/")
 @login_required
