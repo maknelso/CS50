@@ -1,4 +1,5 @@
 import os
+import re
 
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
@@ -52,6 +53,66 @@ def add_cash():
 
     else:
         return render_template("add_cash.html")
+
+
+@app.route("/change_pass", methods=["GET", "POST"])
+@login_required
+def change_pass():
+    """ Change password"""
+    if request.method == "POST":
+
+        # Set-up variables
+        username = request.form.get("username")
+        old_pass = request.form.get("old_pass")
+        new_pass = request.form.get("new_pass")
+        confirm_new_pass = request.form.get("confirm_new_pass")
+
+        user_info = db.execute("SELECT username, hash FROM users WHERE id = :id",
+                                id=session["user_id"])
+
+        # Error checking
+        # Ensure all fields are completed
+        if not request.form.get("username"):
+            return apology("Please enter username.")
+        elif not request.form.get("old_pass"):
+            return apology("Please enter old password.")
+        elif not request.form.get("new_pass"):
+            return apology("Please enter new password.")
+        elif not request.form.get("confirm_new_pass"):
+            return apology("Please enter password confirmation.")
+        # Ensure user is correct
+        elif len(user_info) != 1:
+            return apology("Your username entered is not correct for this account.")
+        # Ensure old password is correct
+        elif check_password_hash(user_info[0]["hash"], old_pass) == False:
+            return apology("Your current password entered is not correct.")
+        # Ensure new password desired matches
+        elif new_pass != confirm_new_pass:
+            return apology("Your new password does not match confirmation.")
+
+        # Error check for password complexity requirements
+        elif len(new_pass) < 8:
+            return apology("Your new password does not meet 8 character requirement.")
+        elif not re.search("[a-z]", new_pass):
+            return apology("Your new password must contain at least 1 lower case character.")
+        elif not re.search("[A-Z]", new_pass):
+            return apology("Your new password must contain at least 1 upper case character.")
+        elif not re.search("[0-9]", new_pass):
+            return apology("Your new password must contain at least 1 digit.")
+        elif not re.search("[!@#$%^&]", new_pass):
+            return apology("Your new password must contain at least 1 special character.")
+
+        # After passing all error check conditions, update password (hash)
+        else:
+            new_hash = generate_password_hash(new_pass)
+            db.execute("UPDATE users SET hash = :new_hash WHERE id = :id",
+                       new_hash=new_hash,
+                       id=session["user_id"])
+            flash("Updated password!")
+            return redirect("/")
+
+    else:
+        return render_template("change_pass.html")
 
 
 @app.route("/")
@@ -144,7 +205,6 @@ def buy():
                        )
             # Shows Bought! message bar on top
             flash("Bought!")
-
             return redirect("/")
 
     # User selected GET (get form)
