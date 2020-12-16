@@ -1,23 +1,27 @@
-# Program should accept the name of a house as a CLA
-# e.g. $ python roster.py Gryffindor
 from sys import argv, exit
-import cs50
 from cs50 import SQL
-import csv
 
 if len(argv) != 2:
-    print("missing command-line argument: please include house")
+    print("Correct Usage: python roster.py house")
     exit(1)
 
-# Open the file for SQLite
-db = cs50.SQL("sqlite:///students.db")
+# Connect to database
+db = SQL("sqlite:///students.db")
 
-rows = db.execute("SELECT * FROM Students WHERE house = ? ORDER BY lName, fName", argv[1])
-for row in rows:
-    # Give myself alias for easier typing
-    fName, mName, lName, birth = row["fName"], row["mName"], row["lName"], row["birth"]
+students = db.execute("SELECT * FROM students WHERE house = ? ORDER BY last, first", argv[1])
 
-    if mName == None:
-        print(f"{fName} {lName}, born {birth}")
-    elif mName != None:
-        print(f"{fName} {mName} {lName}, born {birth}")
+for student in students:
+    # Take dict values and store them into named variables
+    first, middle, last, birth = student["first"], student["middle"], student["last"], student["birth"]
+
+    # Initialise name array
+    name = []
+    name.append(first)
+
+    # Check if there is a middle name
+    if middle is not None:
+        name.append(middle)
+
+    name.append(last)
+
+    print(f"{' '.join(name)}, born {birth}")
