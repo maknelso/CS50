@@ -1,44 +1,31 @@
-# e.g. $ python import.py characters.csv
-# after running above - run sqlite3 students.db to run SQL
-# Take CSV and import that data into a SQLite db
 from sys import argv, exit
-import cs50
-from cs50 import SQL
 import csv
+from cs50 import SQL
 
 if len(argv) != 2:
-    print("missing command-line argument")
+    print("Correct Usage: python import.py characters.csv")
     exit(1)
 
-# Create db by opening and closing file first
-open(f"students.db", "w").close()
+# Connect to database
+db = SQL("sqlite:///students.db")
 
-# Open that file for SQLite
-db = cs50.SQL("sqlite:///students.db")
+with open(argv[1], "r") as students:
 
-# Create table called students in database file called students.db
-# Specific columns we want - db.execute("CREATE TABLE students(fName TEXT, mName TEXT, lName TEXT, house TEXT, year TEXT")
-db.execute("CREATE TABLE students (fName TEXT, mName TEXT, lName TEXT, house TEXT, birth TEXT)")
-
-# Open CSV file
-with open(argv[1], "r") as characters:
-    # Create DictReader -> DictReader reads from 2nd line (ignore header)
-    reader = csv.DictReader(characters, delimiter=',')
+    # Create DictReader
+    reader = csv.DictReader(students)
 
     for row in reader:
-        name = row["name"]
-        house = row["house"]
-        birth = row["birth"]
+        name = row["name"].split()
+        first_name = name[0]
 
-        # Use split function on name to split into words
-        # example 1: Hannah Abbott      => Hannah, Abbott
-        # example 2: Harry James Potter => Harry, James, Potter
-        splitName = name.split()
+        # Check if there is a middle name
+        if len(name) == 3:
+            middle_name = name[1]
+            last_name = name[2]
+        else:
+            middle_name = None
+            last_name = name[1]
 
-        # full name does not have a middle name
-        if len(splitName) == 2:
-            db.execute("INSERT INTO students(fName, mName, lName, house, birth) VALUES(?, ?, ?, ?, ?)", splitName[0], None, splitName[1], house, birth)
-
-        # full name has a middle name
-        elif len(splitName) == 3:
-            db.execute("INSERT INTO students(fName, mName, lName, house, birth) VALUES(?, ?, ?, ?, ?)", splitName[0], splitName[1], splitName[2], house, birth)
+        # SQL query
+        db.execute("INSERT INTO students (first, middle, last, house, birth) VALUES (?, ?, ?, ?, ?)",
+                    first_name, middle_name, last_name, row["house"], row["birth"])
