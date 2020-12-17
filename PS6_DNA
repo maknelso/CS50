@@ -23,26 +23,27 @@ def main():
 
     # Step 2: Compute the longest counts for each STR (column titles in data.csv after the first column "name")
     # declare a dictionary called "counts"
+    # dictionary is CSV
     counts = {}
 
     # loop through the field name
     # can call subseq_str anything
     # from 1 on (i.e. AGATC,TTTTTTCT,AATG,TCTAG,GATA,TATC,GAAA,TCTG)
     # The fieldnames parameter is a sequence of keys that identify the order in which values in the dictionary passed to the writerow() method are written to the CSV file.
+    # from 1 going forward, to ignore name I believe
     for subseq_str in data.fieldnames[1:]:
         # longest_match: scans sequence (variable containing the texts) and figures out the longest
         # longest_match will execute 8 times.
         # It will scan through the sequence and it's going to count up the number of subseqent STR in a row, it will remember that # and return it and it will be stored in counts
+        # counts - returns counts of how many times an object occurs in list
         counts[subseq_str] = longest_match(sequence, subseq_str)
 
     # After we have the 8 values, we will go to DNA database, one row at a time, and figure out from the row array, which person does it match up with
     # Check each row in data (csv file) for a matching profile
     # row is a keyword in Python (it looks like )
     for row in data:
-        # counts is a dictionary - 8 elements
-        # all is a Python expression
-        # all the count values are equal to the row values
-        # if it is equal for all subseq_str in counts
+        # counts is a dictionary with 8 elements
+        # all is a Python expression. all the count values are equal to the row values, if it is equal for all subseq_str in counts
         if all(counts[subseq_str] == int(row[subseq_str]) for subseq_str in counts):
             # print value in name column
             print(row["name"])
@@ -54,13 +55,14 @@ def main():
 # Custom function
 # sequence are the long str text files
 # loop - and count up sequential matches
-# e.g. when we look for "AGATC", we look 5 at a time, if we look for "TTTTTTCT", we look for 8 at a time
+# e.g. when we look for "AGATC" (subseq_str), we look 5 at a time, if we look for "TTTTTTCT", we look for 8 at a time
 def longest_match(sequence, subseq_str):
     longest = 0
     # e.g. length for subseq_str TATC will be 4
     length = len(subseq_str)
 
     # test to see if it matches with subseq_str
+    # sequence is individual DNA sequences
     for i in range(len(sequence)):
         count = 0
 
