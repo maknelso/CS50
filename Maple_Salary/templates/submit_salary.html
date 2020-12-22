@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <title>Submit Salary</title>
+    </head>
+    <body>
+        <p>
+           Please enter all information in, if not applicable for your job position, just type in "0".
+           For Restricted Share Units (RSU), please use average fair market value (FMV) divided by vesting schedule years to get average FMV per year.
+        </p>
+        <p>
+           E.g., you get 8 RSUs at FMV of $100. Vesting is over 4 years. Therefore, on average, you get 2 RSUs per year (8 RSU / 4 years).
+           Therefore, on average, the FMV of your RSU is valued at 2 RSUs per year * $100 FMV at the time of your offer or $200.
+           You therefore, enter 200 in RSU box.
+        </p>
+        <form action="/submit_salary" method="post">
+            <div class="form-group">
+                <input autocomplete="off" autofocus class="form-control" name="city" placeholder="City" type="text">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="company" placeholder="Company" type="text">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="title" placeholder="Job Title" type="text">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="yoe" placeholder="Years of Experience" type="text">
+            </div>
+            <!-- Creating Cascading Dropdown List -->
+            <!-- Below is a dropdown menu for categories -->
+            <div class="form-group">
+                <select name="category" id="category">
+                    <option value="business">Business jobs</option>
+                    <option value="tech">Tech jobs</option>
+                    <option value="others">Other category jobs</option>
+                </select>
+            </div>
+             <!-- Below is a dropdown menu for sub-categories -->
+            <div class="form-group">
+                <select name="category" id="category">
+                    <option value="business">Business jobs</option>
+                    <option value="tech">Tech jobs</option>
+                    <option value="others">Other category jobs</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="base_salary" placeholder="Base Salary" type="text">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="bonus" placeholder="Bonus" type="text">
+            </div>
+            <div class="form-group">
+                <input class="form-control" name="RSU" placeholder="RSU" type="text">
+            </div>
+            <button class="btn btn-primary" type="submit">Submit Salary</button>
+        </form>
+    </body>
+</html>
