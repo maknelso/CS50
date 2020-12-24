@@ -1,59 +1,139 @@
-<!DOCTYPE html>
+{% extends "layoutfp.html" %}
 
-<html lang="en">
-    <head>
-        <title>Submit Salary</title>
-    </head>
-    <body>
+{% block title %}
+    : Submit Salary
+{% endblock %}
+
+{% block body %}
         <p>
-           Please enter all information in, if not applicable for your job position, just type in "0".
-           For Restricted Share Units (RSU), please use average fair market value (FMV) divided by vesting schedule years to get average FMV per year.
+           Please enter all information in, if not applicable for your job, type in "0".
+           For Restricted Share Units (RSU), use average fair market value (FMV) divided by vesting schedule years to get average FMV per year.
         </p>
         <p>
-           E.g., you get 8 RSUs at FMV of $100. Vesting is over 4 years. Therefore, on average, you get 2 RSUs per year (8 RSU / 4 years).
-           Therefore, on average, the FMV of your RSU is valued at 2 RSUs per year * $100 FMV at the time of your offer or $200.
-           You therefore, enter 200 in RSU box.
+           E.g. You get 8 RSUs at FMV of $100/share. Vesting is 4 years. Therefore, on average, you get 2 RSUs per year (8 RSUs/4 years).
+           The FMV of your RSU is valued at: $200 (2 RSUs per year * $100 FMV). You therefore, enter 200 in RSU box.
         </p>
         <form action="/submit_salary" method="post">
+
+            <!-- drop down menu for city and area -->
             <div class="form-group">
-                <input autocomplete="off" autofocus class="form-control" name="city" placeholder="City" type="text">
+                <label for="user">Select a city/area:</label>
+                <select name="city" id="city">
+                    <option selected="Toronto">Toronto</option>
+                    <option value="Calgary">Calgary</option>
+                    <option value="Edmonton">Edmonton</option>
+                    <option value="Montreal">Montreal</option>
+                    <option value="Ottawa">Ottawa</option>
+                    <option value="Quebec City">Quebec City</option>
+                    <option value="Regina">Regina</option>
+                    <option value="Saskatoon">Saskatoon</option>
+                    <option value="Toronto">Toronto</option>
+                    <option value="Vancouver">Vancouver</option>
+                    <option value="Winnipeg">Winnipeg</option>
+                </select>
             </div>
+            <br>
+
             <div class="form-group">
+                <label for="user">Type in the company's name:</label>
                 <input class="form-control" name="company" placeholder="Company" type="text">
             </div>
+            <br>
+
+        <!-- Cascading drop down menu for jobs, job categories, and differentiator -->
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script>
+        var subjectObject = {
+          "Business Jobs": {
+            "Accounting": ["CPA", "non-CPA"],
+            "Economics": ["N/A"],
+            "Finance": ["CFA", "non-CFA"],
+            "Investment Banking": ["Bulge Bracket", "Non-Bulge Bracket"],
+            "Marketing": ["N/A"],
+            "Management Consulting": ["MBB", "Non-MBB"],
+          },
+          "Tech jobs": {
+            "Software Engineer": ["N/A"],
+            "Data Scientist": ["N/A"],
+            "Product Manager": ["N/A"]
+          },
+          "Other jobs": {
+            "Construction": ["N/A"],
+            "Dentist": ["N/A"],
+            "Nurse": ["N/A"],
+            "Legal": ["N/A"],
+            "Sales": ["N/A"]
+          }
+        }
+        window.onload = function() {
+          var subjectSel = document.getElementById("jcategory");
+          var topicSel = document.getElementById("jsubcategory");
+          var chapterSel = document.getElementById("jdiffer");
+          for (var x in subjectObject) {
+            subjectSel.options[subjectSel.options.length] = new Option(x, x);
+          }
+          subjectSel.onchange = function() {
+            //empty Chapters- and Topics- dropdowns
+            chapterSel.length = 1;
+            topicSel.length = 1;
+            //display correct values
+            for (var y in subjectObject[this.value]) {
+              topicSel.options[topicSel.options.length] = new Option(y, y);
+            }
+          }
+          topicSel.onchange = function() {
+            //empty Chapters dropdown
+            chapterSel.length = 1;
+            //display correct values
+            var z = subjectObject[subjectSel.value][this.value];
+            for (var i = 0; i < z.length; i++) {
+              chapterSel.options[chapterSel.options.length] = new Option(z[i], z[i]);
+            }
+          }
+        }
+        </script>
+        </head>
+        <body>
+        <form name="form1" id="form1" action="/action_page.php">
+        Job Categories: <select name="jcategory" id="jcategory">
+            <option value="" selected="selected">Select a job category</option>
+          </select>
+          <br><br>
+        Job Sub-categories: <select name="jsubcategory" id="jsubcategory">
+            <option value="" selected="selected">Select a job sub-category</option>
+          </select>
+          <br><br>
+        Differentiator: <select name="jdiffer" id="jdiffer">
+            <option value="" selected="selected">Select a job differentiator (if available)</option>
+          </select>
+          <br><br>
+         <!-- end of cascading drop down menu -->
+
             <div class="form-group">
+                <label for="user">Type in your job title:</label>
                 <input class="form-control" name="title" placeholder="Job Title" type="text">
             </div>
+            <br>
             <div class="form-group">
+                <label for="user">Type in your related work years of experience:</label>
                 <input class="form-control" name="yoe" placeholder="Years of Experience" type="text">
             </div>
-            <!-- Creating Cascading Dropdown List -->
-            <!-- Below is a dropdown menu for categories -->
+            <br>
             <div class="form-group">
-                <select name="category" id="category">
-                    <option value="business">Business jobs</option>
-                    <option value="tech">Tech jobs</option>
-                    <option value="others">Other category jobs</option>
-                </select>
-            </div>
-             <!-- Below is a dropdown menu for sub-categories -->
-            <div class="form-group">
-                <select name="category" id="category">
-                    <option value="business">Business jobs</option>
-                    <option value="tech">Tech jobs</option>
-                    <option value="others">Other category jobs</option>
-                </select>
-            </div>
-            <div class="form-group">
+                <label for="user">Type in your base salary:</label>
                 <input class="form-control" name="base_salary" placeholder="Base Salary" type="text">
             </div>
+            <br>
             <div class="form-group">
+                <label for="user">Type in your expected bonus:</label>
                 <input class="form-control" name="bonus" placeholder="Bonus" type="text">
             </div>
+            <br>
             <div class="form-group">
-                <input class="form-control" name="RSU" placeholder="RSU" type="text">
+                <label for="user">Type in your fair market value of average annual RSU:</label>
+                <input class="form-control" name="rsu" placeholder="RSU" type="text">
             </div>
+            <br>
             <button class="btn btn-primary" type="submit">Submit Salary</button>
         </form>
-    </body>
-</html>
+{% endblock %}
