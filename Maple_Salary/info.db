@@ -1,0 +1,16 @@
+SQL QUERY:
+
+CREATE TABLE info (
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+	city VARCHAR(25), 
+	company VARCHAR(30), 
+	jcategory VARCHAR(25),
+	jsubcategory VARCHAR(25),
+	jdiffer VARCHAR(25), -- e.g. CPA, bulge bracket, non-bulge bracket
+	title VARCHAR(25), 
+	yoe TINYINT, 
+	base_salary UNSIGNED smallint,
+	bonus UNSIGNED smallint,
+	rsu UNSIGNED smallint,
+	transacted TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
