@@ -1,0 +1,16 @@
+{% extends "layoutfp.html" %}
+
+{% block title %}
+    : Estimated Salary
+{% endblock %}
+
+{% block body %}
+
+    <br>
+    <font size="+2">Your estimated salary is...</font>
+    <br>
+    <font size="+5">${{ average_salary }}CAD</font>
+    <br>
+    <p>*This was calculated using {{ count }} data point(s). The more data points there are, the more accurate this estimate should be.</p>
+
+{% endblock %}
