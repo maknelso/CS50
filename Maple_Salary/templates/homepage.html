@@ -1,0 +1,50 @@
+{% extends "layoutfp.html" %}
+
+{% block body %}
+
+        <h3>Recent job submissions:</h3>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Total Compensation (base + bonus + RSU)</th>
+                  <th>City/Area</th>
+                  <th>info submitted</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for submission in submissions %}
+                    <tr>
+                        <td> {{ submission["company"]}} </td>
+                        <td> {{ submission["TC"] }} </td>
+                        <td> {{ submission["city"]}} </td>
+                        <td> {{submission["transacted"]}} </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4><em>Business job category examples</em></h4>
+        <ul>
+            <li>Accounting: (Deloitte, EY, KPMG, PWC, BDO, Grant Thornton, etc.)</li>
+            <li>Economics</li>
+            <li>Finance: (Brookfield Asset Management, Cannacord Genuity, Onex Corporation, etc.)</li>
+            <li>Investment Banking: (Goldman Sachs,  JP Morgan, Morgan Stanley, etc.)</li>
+            <li>Marketing: (General Mills, Johnson & Johnson, Kellogg, L'Oréal, Mars, PepsiCo, etc.)</li>
+            <li>Management Consultanting: (McKinsey, Boston Consulting Group, Bain, etc.)</li>
+        </ul>
+
+        <h4><em>Tech job cateogy examples</em></h4>
+        <ul>
+            <li>FAANGM (Facebook, Apple, Amazon, Netflix, Google, Microsoft)</li>
+            <li>Others (Airbnb, Cisco, Oracle, SAP, Shopify, Uber, Lyft, etc. )</li>
+        </ul>
+
+        <h4><em>Other job category examples</em></h4>
+        <ul>
+            <li>Construction, Dentist, Human Resources, Legal, Sales, etc.</li>
+        </ul>
+
+        <img src="/static/maple_syrup_pic.jpg" alt="maple_syrup_pic" class="center">
+{% endblock %}
